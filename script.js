@@ -1469,7 +1469,7 @@ const LIST_PELANGGARAN = [
 const SUPABASE_URL = 'https://cymgrwdjhsrgmhgkaraj.supabase.co/rest/v1/'; // <--- GANTI INI
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN5bWdyd2RqaHNyZ21oZ2thcmFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY1MjM2NzMsImV4cCI6MjEwMjA5OTY3M30.3D6orIlB6ISe9e000b-cgcmZcQxOG_O3jX3WSmDnT28';               // <--- GANTI INI
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // Variable Global
 let currentUser = null;
@@ -1698,7 +1698,7 @@ async function simpanLaporIndividu(e) {
     keterangan: document.getElementById('indKet').value
   };
 
-  const { error } = await supabase.from('laporan_siswa').insert([dataLaporan]);
+  const { error } = await supabaseClient.from('laporan_siswa').insert([dataLaporan]);
 
   if (error) {
     alert('Gagal menyimpan ke database: ' + error.message);
@@ -1725,7 +1725,7 @@ async function simpanLaporKolektif(e) {
     daftar_siswa: listKolektifTerpilih
   };
 
-  const { error } = await supabase.from('laporan_siswa').insert([dataLaporan]);
+  const { error } = await supabaseClient.from('laporan_siswa').insert([dataLaporan]);
 
   if (error) {
     alert('Gagal menyimpan ke database: ' + error.message);
@@ -1742,7 +1742,7 @@ async function renderDashboardTable() {
   const tbody = document.getElementById('rekapTableBody');
   tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-400">Memuat data dari database...</td></tr>';
 
-  const { data: allData, error } = await supabase
+  const { data: allData, error } = await supabaseClient
     .from('laporan_siswa')
     .select('*')
     .order('created_at', { ascending: false });
@@ -1813,7 +1813,7 @@ async function renderDashboardTable() {
 
 async function hapusLaporan(id) {
   if (confirm('Apakah Anda yakin ingin menghapus laporan ini?')) {
-    const { error } = await supabase.from('laporan_siswa').delete().eq('id', id);
+    const { error } = await supabaseClient.from('laporan_siswa').delete().eq('id', id);
 
     if (error) {
       alert('Gagal menghapus: ' + error.message);
@@ -1825,7 +1825,7 @@ async function hapusLaporan(id) {
 
 // Export Data ke CSV / Excel
 async function exportToCSV() {
-  const { data: allData, error } = await supabase.from('laporan_siswa').select('*');
+  const { data: allData, error } = await supabaseClient.from('laporan_siswa').select('*');
   if (error || !allData || allData.length === 0) {
     alert('Tidak ada data untuk di-export!');
     return;
