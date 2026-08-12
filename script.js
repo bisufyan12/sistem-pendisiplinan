@@ -1466,7 +1466,7 @@ const LIST_PELANGGARAN = [
 ];
 
 // ==================== 2. KONFIGURASI SUPABASE (BARU) ====================
-const SUPABASE_URL = 'https://cymgrwdjhsrgmhgkaraj.supabase.co/rest/v1/'; // <--- GANTI INI
+const SUPABASE_URL = 'https://cymgrwdjhsrgmhgkaraj.supabase.co/rest/v1'; // <--- GANTI INI
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN5bWdyd2RqaHNyZ21oZ2thcmFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY1MjM2NzMsImV4cCI6MjEwMjA5OTY3M30.3D6orIlB6ISe9e000b-cgcmZcQxOG_O3jX3WSmDnT28';               // <--- GANTI INI
 
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
