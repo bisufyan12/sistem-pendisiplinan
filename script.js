@@ -1684,6 +1684,48 @@ function renderDaftarKolektif() {
   });
 }
 
+
+// Jalankan saat halaman web selesai dimuat
+document.addEventListener('DOMContentLoaded', () => {
+  muatDropdownKelas();
+});
+
+function muatDropdownKelas() {
+  // Ambil elemen dropdown
+  const selectIndividu = document.getElementById('indKelas');
+  const selectKolektif = document.getElementById('kolKelas'); // Jika ada form kolektif
+
+  // Pastikan variabel DATA_SISWA ada dan berupa array
+  if (typeof DATA_SISWA === 'undefined' || !Array.isArray(DATA_SISWA)) {
+    console.error('Data DATA_SISWA tidak ditemukan!');
+    return;
+  }
+
+  // 1. Ambil nama kelas unik (hilangkan duplikat)
+  const kelasUnik = [...new Set(DATA_SISWA.map(siswa => siswa.kelas))];
+
+  // 2. Urutkan kelas secara alami (X.1, X.2, ..., XII.12)
+  kelasUnik.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+
+  // 3. Fungsi pembantu untuk mengisi elemen <select>
+  const isiSelect = (selectElement) => {
+    if (!selectElement) return;
+    
+    // BERSIHKAN ISI LAMA agar tidak terjadi duplikasi saat dipanggil ulang
+    selectElement.innerHTML = '<option value="">-- Pilih Kelas --</option>';
+
+    kelasUnik.forEach(kelas => {
+      const option = document.createElement('option');
+      option.value = kelas;
+      option.textContent = kelas;
+      selectElement.appendChild(option);
+    });
+  };
+
+  // 4. Terapkan ke dropdown yang ada
+  isiSelect(selectIndividu);
+  isiSelect(selectKolektif);
+}
 // ==================== 5. SIMPAN DATA KE SUPABASE ====================
 async function simpanLaporIndividu(e) {
   e.preventDefault();
