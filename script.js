@@ -1,6 +1,6 @@
 // DATA MASTER SIMULASI
 const DATA_GURU = [
-    { nip: '19800101', nama: 'Budi Santoso, S.Pd.', isPembina: true }, // Diberi flag Pembina OSIS
+    { nip: '19800101', nama: 'Budi Santoso, S.Pd.', isPembina: true }, // Diberi flag Admin
     { nip: '19850202', nama: 'Siti Aminah, M.Pd.', isPembina: false },
     {nip: '196809171992031007', nama: 'Drs. H. AGUS SETIAWAN, M.Pd.', isPembina: true },
     {nip: '196801191994122001', nama: 'Dra. TENI SUKMAWATI', isPembina: false },
@@ -1521,7 +1521,7 @@ function handleLogin(e) {
 
   if (user) {
     isPembina = user.isPembina || false;
-    if (isPembina) role = 'Pembina OSIS';
+    if (isPembina) role = 'Admin';
   } else {
     user = DATA_SISWA.find(s => s.nisn === idInput);
     role = 'Pengurus OSIS';
