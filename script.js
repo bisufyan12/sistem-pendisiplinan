@@ -1462,7 +1462,7 @@ const DATA_SISWA = [
 const LIST_PELANGGARAN = [
   "Terlambat Datang", "Atribut Tidak Lengkap", "Pakaian Tidak Rapi/Sesuai",
   "Rambut Tidak Pantas", "Berdandan Berlebihan", "Mengejek", "Berkata Tidak Pantas", "Bolos Pelajaran", "Bolos Sekolah",
-  "Merokok", "Minum Minuman Keras", "Konsumsi Obat Terlarang", "Berkelahi", "Pelecehan Seksual"
+  "Merokok", "Minum Minuman Keras", "Konsumsi Obat Terlarang", "Berkelahi", "Pelecehan Seksual", "Lainnya"
 ];
 
 // ==================== 2. KONFIGURASI SUPABASE (BARU) ====================
