@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistem Pendataan Siswa Bermasalah</title>
+  <title>SIPS SMANDA</title>
   <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Masukkan CDN Supabase ini di dalam tag <head> -->
@@ -13,7 +13,7 @@
 <body class="bg-slate-100 min-h-screen text-slate-800">
 
   <!-- ==================== 1. HALAMAN LOGIN ==================== -->
-  <div id="pageLogin" class="flex items-center justify-center min-h-screen p-4">
+  <!-- <div id="pageLogin" class="flex items-center justify-center min-h-screen p-4">
     <div class="bg-white p-6 rounded-xl shadow-md w-full max-w-md border border-slate-200">
       <h2 class="text-2xl font-bold text-center text-slate-800 mb-1">Sistem Pendataan Siswa</h2>
       <p class="text-sm text-center text-slate-500 mb-6">Silakan login menggunakan NIP (Guru/Pembina) atau NISN (OSIS)</p>
@@ -31,7 +31,83 @@
       </form>
       <div id="loginError" class="text-red-500 text-xs text-center mt-3 hidden">ID atau Password salah!</div>
     </div>
+  </div> -->
+  
+<div id="pageLogin" class="flex items-center justify-center min-h-screen p-4 bg-slate-100">
+  <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md border border-slate-200">
+    
+    <!-- Header: Logo, Judul & Ucapan Selamat Datang -->
+    <div class="text-center mb-6">
+      <!-- Sesuaikan src dengan lokasi file logo Anda -->
+      <img 
+        src="assets/logo-smanda.png" 
+        alt="Logo SIPS SMANDA" 
+        class="w-24 h-24 mx-auto mb-3 object-contain"
+      />
+      <h2 class="text-2xl font-bold text-slate-800">Selamat Datang</h2>
+      <p class="text-sm text-slate-500 mt-1">Silahkan masukkan NIP/NISN dan Kata Sandi Anda</p>
+    </div>
+
+    <!-- Form Login (ID & Event tetap dipertahankan) -->
+    <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+      <div>
+        <input 
+          type="text" 
+          id="loginId" 
+          required 
+          placeholder="NIP / NISN" 
+          class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+        >
+      </div>
+      <div>
+        <input 
+          type="password" 
+          id="loginPass" 
+          required 
+          placeholder="Kata Sandi" 
+          class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+        >
+      </div>
+      <button 
+        type="submit" 
+        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition"
+      >
+        Masuk
+      </button>
+    </form>
+
+    <!-- Elemen Pesan Error (Wajib Ada untuk JS) -->
+    <div id="loginError" class="text-red-500 text-xs text-center mt-3 hidden">
+      ID atau Password salah!
+    </div>
+
   </div>
+</div>
+
+    <!-- Input Kata Sandi (Tanpa Label, Menggunakan Placeholder) -->
+    <div>
+      <input 
+        type="password" 
+        id="loginPass" 
+        placeholder="Kata Sandi" 
+        required 
+        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
+      />
+    </div>
+
+    <!-- Tombol Masuk -->
+    <button 
+      type="submit" 
+      class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition duration-200"
+    >
+      Masuk
+    </button>
+  </form>
+
+</div>
+
+
+  
 
   <!-- ==================== UTAMA (AFTER LOGIN) ==================== -->
   <div id="mainApp" class="hidden min-h-screen pb-12">
