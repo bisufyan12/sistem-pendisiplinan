@@ -6,125 +6,79 @@
   <title>SIPS SMANDA</title>
   <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Masukkan CDN Supabase ini di dalam tag <head> -->
+  <!-- CDN Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="script.js"></script>
 </head>
 <body class="bg-slate-100 min-h-screen text-slate-800">
 
   <!-- ==================== 1. HALAMAN LOGIN ==================== -->
-  <!-- <div id="pageLogin" class="flex items-center justify-center min-h-screen p-4">
-    <div class="bg-white p-6 rounded-xl shadow-md w-full max-w-md border border-slate-200">
-      <h2 class="text-2xl font-bold text-center text-slate-800 mb-1">Sistem Pendataan Siswa</h2>
-      <p class="text-sm text-center text-slate-500 mb-6">Silakan login menggunakan NIP (Guru/Pembina) atau NISN (OSIS)</p>
+  <div id="pageLogin" class="flex items-center justify-center min-h-screen p-4 bg-slate-100">
+    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md border border-slate-200">
       
+      <!-- Header: Logo, Judul & Ucapan Selamat Datang -->
+      <div class="text-center mb-6">
+        <img 
+          src="logo-smanda.jpg" 
+          alt="Logo SIPS SMANDA" 
+          class="w-24 h-24 mx-auto mb-3 object-contain"
+        />
+        <h2 class="text-2xl font-bold text-slate-800">SIPS SMANDA</h2>
+        <p class="text-sm text-slate-500 mt-1">Sistem Informasi Pendisiplinan Siswa SMAN 2 Karawang</p>
+      </div>
+
+      <!-- Form Login -->
       <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
         <div>
-          <label class="block text-sm font-semibold mb-1">NIP / NISN</label>
-          <input type="text" id="loginId" required placeholder="Masukkan NIP atau NISN" class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+          <input 
+            type="text" 
+            id="loginId" 
+            required 
+            placeholder="NIP / NISN" 
+            class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none text-sm"
+          >
         </div>
         <div>
-          <label class="block text-sm font-semibold mb-1">Password</label>
-          <input type="password" id="loginPass" required placeholder="Sama dengan NIP / NISN" class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+          <input 
+            type="password" 
+            id="loginPass" 
+            required 
+            placeholder="Kata Sandi" 
+            class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none text-sm"
+          >
         </div>
-        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition">Masuk</button>
+        <button 
+          type="submit" 
+          class="w-full bg-amber-500 hover:bg-amber-600 text-slate-900 font-semibold py-3 rounded-lg transition duration-200 shadow"
+        >
+          Masuk
+        </button>
       </form>
-      <div id="loginError" class="text-red-500 text-xs text-center mt-3 hidden">ID atau Password salah!</div>
-    </div>
-  </div> -->
-  
-<div id="pageLogin" class="flex items-center justify-center min-h-screen p-4 bg-slate-100">
-  <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md border border-slate-200">
-    
-    <!-- Header: Logo, Judul & Ucapan Selamat Datang -->
-    <div class="text-center mb-6">
-      <!-- Sesuaikan src dengan lokasi file logo Anda -->
-      <img 
-        src="logo-smanda.jpg" 
-        alt="Logo SIPS SMANDA" 
-        class="w-24 h-24 mx-auto mb-3 object-contain"
-      />
-      <h2 class="text-2xl font-bold text-slate-800">SIPS SMANDA</h2>
-      <p class="text-sm text-slate-500 mt-1">Sistem Informasi Pendisiplinan Siswa SMAN 2 Karawang</p>
-    </div>
 
-    <!-- Form Login (ID & Event tetap dipertahankan) -->
-    <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
-      <div>
-        <input 
-          type="text" 
-          id="loginId" 
-          required 
-          placeholder="NIP / NISN" 
-          class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
-        >
+      <!-- Elemen Pesan Error -->
+      <div id="loginError" class="text-red-500 text-xs text-center mt-3 hidden">
+        ID atau Password salah!
       </div>
-      <div>
-        <input 
-          type="password" 
-          id="loginPass" 
-          required 
-          placeholder="Kata Sandi" 
-          class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
-        >
-      </div>
-      <button 
-        type="submit" 
-        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition"
-      >
-        Masuk
-      </button>
-    </form>
 
-    <!-- Elemen Pesan Error (Wajib Ada untuk JS) -->
-    <div id="loginError" class="text-red-500 text-xs text-center mt-3 hidden">
-      ID atau Password salah!
     </div>
-
   </div>
-</div>
 
-    <!-- Input Kata Sandi (Tanpa Label, Menggunakan Placeholder) -->
-    <div>
-      <input 
-        type="password" 
-        id="loginPass" 
-        placeholder="Kata Sandi" 
-        required 
-        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
-      />
-    </div>
-
-    <!-- Tombol Masuk -->
-    <button 
-      type="submit" 
-      class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition duration-200"
-    >
-      Masuk
-    </button>
-  </form>
-
-</div>
-
-
-  
-
-  <!-- ==================== UTAMA (AFTER LOGIN) ==================== -->
+  <!-- ==================== 2. UTAMA (AFTER LOGIN) ==================== -->
   <div id="mainApp" class="hidden min-h-screen pb-12">
     <!-- Navbar Header -->
-    <header class="bg-blue-600 text-white p-4 shadow-md flex justify-between items-center">
+    <header class="bg-amber-500 text-slate-900 p-4 shadow-md flex justify-between items-center">
       <div>
         <h1 class="text-lg font-bold">Aplikasi Pendataan Pelanggaran Kedisiplinan Siswa</h1>
-        <p class="text-xs text-blue-100">Login sebagai: <span id="userPelapor" class="font-semibold"></span></p>
+        <p class="text-xs text-slate-800">Login sebagai: <span id="userPelapor" class="font-semibold"></span></p>
       </div>
-      <button onclick="handleLogout()" class="bg-blue-700 hover:bg-blue-800 text-xs px-3 py-2 rounded-lg transition">Keluar</button>
+      <button onclick="handleLogout()" class="bg-amber-600 hover:bg-amber-700 text-slate-900 text-xs px-3 py-2 rounded-lg font-medium transition">Keluar</button>
     </header>
 
-    <!-- Navigation Menu (Muncul untuk Pembina) -->
+    <!-- Navigation Menu (Muncul untuk Admin) -->
     <div id="navMenu" class="max-w-5xl mx-auto mt-4 px-4 hidden">
       <div class="flex space-x-2 border-b border-slate-300 pb-2">
-        <button id="navFormBtn" onclick="showSection('form')" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold shadow">Form Input Laporan</button>
-        <button id="navDashboardBtn" onclick="showSection('dashboard')" class="px-4 py-2 bg-slate-200 text-slate-700 hover:bg-slate-300 rounded-lg text-sm font-semibold">Dashboard Pembina OSIS</button>
+        <button id="navFormBtn" onclick="showSection('form')" class="px-4 py-2 bg-amber-500 text-slate-900 rounded-lg text-sm font-semibold shadow">Form Input Laporan</button>
+        <button id="navDashboardBtn" onclick="showSection('dashboard')" class="px-4 py-2 bg-slate-200 text-slate-700 hover:bg-slate-300 rounded-lg text-sm font-semibold">Dashboard Admin</button>
       </div>
     </div>
 
@@ -138,7 +92,7 @@
         </div>
 
         <div class="flex border-b mb-6">
-          <button id="tabIndividuBtn" onclick="switchTab('individu')" class="flex-1 py-2 text-center font-semibold text-blue-600 border-b-2 border-blue-600">1. Laporan Individu</button>
+          <button id="tabIndividuBtn" onclick="switchTab('individu')" class="flex-1 py-2 text-center font-semibold text-amber-600 border-b-2 border-amber-500">1. Laporan Individu</button>
           <button id="tabKolektifBtn" onclick="switchTab('kolektif')" class="flex-1 py-2 text-center font-semibold text-slate-500 border-b-2 border-transparent">2. Laporan Kolektif</button>
         </div>
 
@@ -146,46 +100,45 @@
         <form id="formIndividu" onsubmit="simpanLaporIndividu(event)" class="space-y-4">
           <div>
             <label class="block text-sm font-semibold mb-1">Kelas</label>
-            <select id="indKelas" onchange="filterSiswaIndividu()" required class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500">
+            <select id="indKelas" onchange="filterSiswaIndividu()" required class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-amber-500">
               <option value="">-- Pilih Kelas --</option>
-              <!-- Kosongkan sisanya, biarkan JavaScript yang mengisi -->
             </select>
           </div>
 
           <div>
             <label class="block text-sm font-semibold mb-1">Nama Siswa</label>
-            <select id="indSiswa" required disabled class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 bg-slate-50">
+            <select id="indSiswa" required disabled class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-amber-500 bg-slate-50">
               <option value="">-- Pilih Kelas Terlebih Dahulu --</option>
             </select>
           </div>
 
           <div>
             <label class="block text-sm font-semibold mb-1">Pelanggaran</label>
-            <select id="indPelanggaran" required class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500">
+            <select id="indPelanggaran" required class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-amber-500">
               <option value="">-- Pilih Pelanggaran --</option>
             </select>
           </div>
 
           <div>
             <label class="block text-sm font-semibold mb-1">Keterangan Terlapor</label>
-            <textarea id="indKet" rows="3" placeholder="Detail kejadian, tempat, BAP singkat..." class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+            <textarea id="indKet" rows="3" placeholder="Detail kejadian, tempat, BAP singkat..." class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-amber-500 outline-none"></textarea>
           </div>
 
-          <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition">Kirim Laporan Individu</button>
+          <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-900 font-semibold py-2.5 rounded-lg transition shadow">Kirim Laporan Individu</button>
         </form>
 
         <!-- FORM KOLEKTIF -->
         <form id="formKolektif" onsubmit="simpanLaporKolektif(event)" class="space-y-4 hidden">
           <div>
             <label class="block text-sm font-semibold mb-1">Pelanggaran</label>
-            <select id="kolPelanggaran" required class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500">
+            <select id="kolPelanggaran" required class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-amber-500">
               <option value="">-- Pilih Pelanggaran --</option>
             </select>
           </div>
 
           <div class="relative">
             <label class="block text-sm font-semibold mb-1">Cari & Tambah Siswa</label>
-            <input type="text" id="kolSearch" oninput="liveSearchSiswa()" placeholder="Ketik nama siswa..." class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+            <input type="text" id="kolSearch" oninput="liveSearchSiswa()" placeholder="Ketik nama siswa..." class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-amber-500 outline-none">
             <div id="searchResults" class="absolute left-0 right-0 bg-white border rounded-lg shadow-lg mt-1 max-h-48 overflow-y-auto hidden z-10"></div>
           </div>
 
@@ -196,19 +149,19 @@
             </div>
           </div>
 
-          <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition">Kirim Laporan Kolektif</button>
+          <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-900 font-semibold py-2.5 rounded-lg transition shadow">Kirim Laporan Kolektif</button>
         </form>
 
       </div>
     </div>
 
-    <!-- SECTION 2: DASHBOARD PEMBINA OSIS -->
+    <!-- SECTION 2: DASHBOARD ADMIN -->
     <div id="sectionDashboard" class="max-w-5xl mx-auto mt-6 p-4 hidden">
       <!-- Ringkasan Stat -->
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
           <p class="text-xs text-slate-500">Total Laporan</p>
-          <p id="statTotal" class="text-2xl font-bold text-blue-600">0</p>
+          <p id="statTotal" class="text-2xl font-bold text-amber-600">0</p>
         </div>
         <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
           <p class="text-xs text-slate-500">Laporan Individu</p>
@@ -230,7 +183,7 @@
           </select>
           <input type="text" id="filterKeyword" oninput="renderDashboardTable()" placeholder="Cari nama / pelapor..." class="p-2 border rounded-lg text-sm outline-none">
         </div>
-        <button onclick="exportToCSV()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm px-4 py-2 rounded-lg transition">
+        <button onclick="exportToCSV()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm px-4 py-2 rounded-lg transition shadow">
           Export ke Excel (CSV)
         </button>
       </div>
