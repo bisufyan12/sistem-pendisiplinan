@@ -1476,21 +1476,33 @@ let currentUser = null;
 let listKolektifTerpilih = [];
 
 // Dynamic Init Saat Halaman Dimuat
+        // window.onload = function() {
+        //   const selectInd = document.getElementById('indPelanggaran');
+        //   const selectKol = document.getElementById('kolPelanggaran');
+        //   LIST_PELANGGARAN.forEach(p => {
+        //     selectInd.add(new Option(p, p));
+        //     selectKol.add(new Option(p, p));
+        //   });
+        
+        //   // Generate Otomatis Pilih Kelas di Form Individu
+        //   const selectKelas = document.getElementById('indKelas');
+        //   const daftarKelas = [...new Set(DATA_SISWA.map(s => s.kelas))].sort();
+        //   daftarKelas.forEach(k => {
+        //     selectKelas.add(new Option(k, k));
+        //   });
+        // };
+// --- KODE BARU (Sesudah Dihapus) ---
 window.onload = function() {
   const selectInd = document.getElementById('indPelanggaran');
   const selectKol = document.getElementById('kolPelanggaran');
-  LIST_PELANGGARAN.forEach(p => {
-    selectInd.add(new Option(p, p));
-    selectKol.add(new Option(p, p));
-  });
-
-  // Generate Otomatis Pilih Kelas di Form Individu
-  const selectKelas = document.getElementById('indKelas');
-  const daftarKelas = [...new Set(DATA_SISWA.map(s => s.kelas))].sort();
-  daftarKelas.forEach(k => {
-    selectKelas.add(new Option(k, k));
-  });
+  if (typeof LIST_PELANGGARAN !== 'undefined') {
+    LIST_PELANGGARAN.forEach(p => {
+      if (selectInd) selectInd.add(new Option(p, p));
+      if (selectKol) selectKol.add(new Option(p, p));
+    });
+  }
 };
+
 
 // ==================== 3. LOGIKA AUTH & NAVIGASI ====================
 function handleLogin(e) {
