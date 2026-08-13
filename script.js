@@ -1569,41 +1569,52 @@ function initReportPage() {
 }
 
 function showSection(section) {
+  const formBtn = document.getElementById('navFormBtn');
+  const dashBtn = document.getElementById('navDashboardBtn');
   const formSec = document.getElementById('sectionForm');
   const dashSec = document.getElementById('sectionDashboard');
-  const navFormBtn = document.getElementById('navFormBtn');
-  const navDashBtn = document.getElementById('navDashboardBtn');
+
+  if (!formBtn || !dashBtn) return;
 
   if (section === 'form') {
     formSec.classList.remove('hidden');
     dashSec.classList.add('hidden');
-    navFormBtn.className = "px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold shadow";
-    navDashBtn.className = "px-4 py-2 bg-slate-200 text-slate-700 hover:bg-slate-300 rounded-lg text-sm font-semibold";
+    
+    // Style Tombol Form Aktif (Navy + Teks Emas)
+    formBtn.className = 'px-5 py-2.5 bg-slate-900 text-amber-400 rounded-xl text-sm font-bold shadow-sm';
+    dashBtn.className = 'px-5 py-2.5 bg-white text-slate-700 hover:bg-slate-200 border border-slate-300 rounded-xl text-sm font-semibold transition';
   } else {
-    dashSec.classList.remove('hidden');
     formSec.classList.add('hidden');
-    navDashBtn.className = "px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold shadow";
-    navFormBtn.className = "px-4 py-2 bg-slate-200 text-slate-700 hover:bg-slate-300 rounded-lg text-sm font-semibold";
-    renderDashboardTable();
+    dashSec.classList.remove('hidden');
+    
+    // Style Tombol Dashboard Aktif (Navy + Teks Emas)
+    dashBtn.className = 'px-5 py-2.5 bg-slate-900 text-amber-400 rounded-xl text-sm font-bold shadow-sm';
+    formBtn.className = 'px-5 py-2.5 bg-white text-slate-700 hover:bg-slate-200 border border-slate-300 rounded-xl text-sm font-semibold transition';
   }
 }
 
 function switchTab(tab) {
-  const indForm = document.getElementById('formIndividu');
-  const kolForm = document.getElementById('formKolektif');
   const indBtn = document.getElementById('tabIndividuBtn');
   const kolBtn = document.getElementById('tabKolektifBtn');
+  const indForm = document.getElementById('formIndividu');
+  const kolForm = document.getElementById('formKolektif');
+
+  if (!indBtn || !kolBtn) return;
 
   if (tab === 'individu') {
     indForm.classList.remove('hidden');
     kolForm.classList.add('hidden');
-    indBtn.className = "flex-1 py-2 text-center font-semibold text-blue-600 border-b-2 border-blue-600";
-    kolBtn.className = "flex-1 py-2 text-center font-semibold text-slate-500 border-b-2 border-transparent";
+
+    // Style Tab Individu Aktif (Teks Gelap + Garis Emas)
+    indBtn.className = 'flex-1 py-2.5 text-center font-bold text-slate-900 border-b-2 border-amber-400';
+    kolBtn.className = 'flex-1 py-2.5 text-center font-semibold text-slate-400 border-b-2 border-transparent hover:text-slate-600';
   } else {
     kolForm.classList.remove('hidden');
     indForm.classList.add('hidden');
-    kolBtn.className = "flex-1 py-2 text-center font-semibold text-blue-600 border-b-2 border-blue-600";
-    indBtn.className = "flex-1 py-2 text-center font-semibold text-slate-500 border-b-2 border-transparent";
+
+    // Style Tab Kolektif Aktif (Teks Gelap + Garis Emas)
+    kolBtn.className = 'flex-1 py-2.5 text-center font-bold text-slate-900 border-b-2 border-amber-400';
+    indBtn.className = 'flex-1 py-2.5 text-center font-semibold text-slate-400 border-b-2 border-transparent hover:text-slate-600';
   }
 }
 
