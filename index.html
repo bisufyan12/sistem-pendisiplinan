@@ -10,21 +10,23 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="script.js"></script>
 </head>
-<body class="bg-slate-100 min-h-screen text-slate-800">
+<body class="bg-slate-100 min-h-screen text-slate-800 font-sans">
 
   <!-- ==================== 1. HALAMAN LOGIN ==================== -->
-  <div id="pageLogin" class="flex items-center justify-center min-h-screen p-4 bg-slate-200/60">
-    <div class="bg-white p-8 rounded-xl shadow-xl w-full max-w-md border-t-4 border-amber-400">
-      
+  <div id="pageLogin" class="flex items-center justify-center min-h-screen p-4 bg-slate-100">
+    <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-200 relative overflow-hidden">
+      <!-- Top Accent Line -->
+      <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-slate-900 via-amber-400 to-slate-900"></div>
+
       <!-- Header: Logo, Judul & Ucapan Selamat Datang -->
-      <div class="text-center mb-6">
+      <div class="text-center mb-6 mt-2">
         <img 
           src="logo-smanda.jpg" 
           alt="Logo SIPS SMANDA" 
-          class="w-28 h-28 mx-auto mb-3 object-contain"
+          class="w-24 h-24 mx-auto mb-3 object-contain drop-shadow"
         />
-        <h2 class="text-2xl font-bold text-slate-900">SIPS SMANDA</h2>
-        <p class="text-xs text-slate-500 mt-1">Sistem Informasi Pendisiplinan Siswa SMAN 2 Karawang</p>
+        <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">SIPS SMANDA</h2>
+        <p class="text-xs font-medium text-slate-500 mt-1">Sistem Informasi Pendisiplinan Siswa SMAN 2 Karawang</p>
       </div>
 
       <!-- Form Login -->
@@ -35,7 +37,7 @@
             id="loginId" 
             required 
             placeholder="NIP / NISN" 
-            class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 outline-none text-sm"
+            class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-amber-400 focus:border-slate-800 outline-none text-sm transition"
           >
         </div>
         <div>
@@ -44,12 +46,12 @@
             id="loginPass" 
             required 
             placeholder="Kata Sandi" 
-            class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 outline-none text-sm"
+            class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-amber-400 focus:border-slate-800 outline-none text-sm transition"
           >
         </div>
         <button 
           type="submit" 
-          class="w-full bg-slate-900 hover:bg-slate-800 text-amber-400 font-semibold py-3 rounded-lg transition duration-200 shadow-md flex justify-center items-center gap-1"
+          class="w-full bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold py-3 rounded-xl transition duration-200 shadow-md hover:shadow-lg text-sm"
         >
           Masuk
         </button>
@@ -66,90 +68,98 @@
   <!-- ==================== 2. UTAMA (AFTER LOGIN) ==================== -->
   <div id="mainApp" class="hidden min-h-screen pb-12">
     <!-- Navbar Header -->
-    <header class="bg-slate-900 text-white p-4 shadow-lg flex justify-between items-center border-b-2 border-amber-400">
-      <div>
-        <h1 class="text-lg font-bold text-amber-400">Aplikasi Pendataan Pelanggaran Kedisiplinan Siswa</h1>
-        <p class="text-xs text-slate-300">Login sebagai: <span id="userPelapor" class="font-semibold text-amber-300"></span></p>
+    <header class="bg-slate-900 text-white p-4 shadow-md flex justify-between items-center border-b-2 border-amber-400">
+      <div class="flex items-center gap-3">
+        <div>
+          <h1 class="text-base sm:text-lg font-bold text-white tracking-wide">Aplikasi Pendataan Pelanggaran Kedisiplinan Siswa</h1>
+          <p class="text-xs text-slate-300 mt-0.5">Login sebagai: <span id="userPelapor" class="font-bold text-amber-400"></span></p>
+        </div>
       </div>
-      <button onclick="handleLogout()" class="bg-amber-400 hover:bg-amber-500 text-slate-950 text-xs px-3 py-2 rounded-lg font-semibold transition shadow">Keluar</button>
+      <button onclick="handleLogout()" class="bg-amber-400 hover:bg-amber-500 text-slate-950 text-xs px-4 py-2 rounded-lg font-bold transition shadow-sm">
+        Keluar
+      </button>
     </header>
 
     <!-- Navigation Menu (Muncul untuk Admin) -->
-    <div id="navMenu" class="max-w-5xl mx-auto mt-4 px-4 hidden">
+    <div id="navMenu" class="max-w-5xl mx-auto mt-6 px-4 hidden">
       <div class="flex space-x-2 border-b border-slate-300 pb-2">
-        <button id="navFormBtn" onclick="showSection('form')" class="px-4 py-2 bg-slate-900 text-amber-400 rounded-lg text-sm font-semibold shadow">Form Input Laporan</button>
-        <button id="navDashboardBtn" onclick="showSection('dashboard')" class="px-4 py-2 bg-slate-200 text-slate-700 hover:bg-slate-300 rounded-lg text-sm font-semibold">Dashboard Admin</button>
+        <button id="navFormBtn" onclick="showSection('form')" class="px-5 py-2.5 bg-slate-900 text-amber-400 rounded-xl text-sm font-bold shadow-sm">Form Input Laporan</button>
+        <button id="navDashboardBtn" onclick="showSection('dashboard')" class="px-5 py-2.5 bg-white text-slate-700 hover:bg-slate-200 border border-slate-300 rounded-xl text-sm font-semibold transition">Dashboard Admin</button>
       </div>
     </div>
 
     <!-- SECTION 1: FORM PELAPORAN -->
     <div id="sectionForm" class="max-w-3xl mx-auto mt-6 p-4">
-      <div class="bg-white p-6 rounded-xl shadow-md border border-slate-200">
+      <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200">
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 p-3 bg-slate-50 rounded-lg text-sm border border-slate-200">
-          <div><span class="text-slate-500">Nama Pelapor:</span> <strong id="infoNamaPelapor" class="text-slate-900">-</strong></div>
-          <div><span class="text-slate-500">Hari, Tanggal:</span> <strong id="infoTanggal" class="text-slate-900">-</strong></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 p-3.5 bg-amber-50/50 rounded-xl text-sm border border-amber-200/70">
+          <div><span class="text-slate-500">Nama Pelapor:</span> <strong id="infoNamaPelapor" class="text-slate-900 font-bold">-</strong></div>
+          <div><span class="text-slate-500">Hari, Tanggal:</span> <strong id="infoTanggal" class="text-slate-900 font-bold">-</strong></div>
         </div>
 
         <div class="flex border-b border-slate-200 mb-6">
-          <button id="tabIndividuBtn" onclick="switchTab('individu')" class="flex-1 py-2 text-center font-bold text-slate-900 border-b-2 border-amber-400">1. Laporan Individu</button>
-          <button id="tabKolektifBtn" onclick="switchTab('kolektif')" class="flex-1 py-2 text-center font-semibold text-slate-400 border-b-2 border-transparent">2. Laporan Kolektif</button>
+          <button id="tabIndividuBtn" onclick="switchTab('individu')" class="flex-1 py-2.5 text-center font-bold text-slate-900 border-b-2 border-amber-400">1. Laporan Individu</button>
+          <button id="tabKolektifBtn" onclick="switchTab('kolektif')" class="flex-1 py-2.5 text-center font-semibold text-slate-400 border-b-2 border-transparent hover:text-slate-600">2. Laporan Kolektif</button>
         </div>
 
         <!-- FORM INDIVIDU -->
         <form id="formIndividu" onsubmit="simpanLaporIndividu(event)" class="space-y-4">
           <div>
-            <label class="block text-sm font-semibold mb-1 text-slate-800">Kelas</label>
-            <select id="indKelas" onchange="filterSiswaIndividu()" required class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-slate-900 outline-none">
+            <label class="block text-sm font-bold mb-1.5 text-slate-700">Kelas</label>
+            <select id="indKelas" onchange="filterSiswaIndividu()" required class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-amber-400 focus:border-slate-800 outline-none text-sm transition">
               <option value="">-- Pilih Kelas --</option>
             </select>
           </div>
 
           <div>
-            <label class="block text-sm font-semibold mb-1 text-slate-800">Nama Siswa</label>
-            <select id="indSiswa" required disabled class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-slate-900 bg-slate-50 outline-none">
+            <label class="block text-sm font-bold mb-1.5 text-slate-700">Nama Siswa</label>
+            <select id="indSiswa" required disabled class="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-400 focus:border-slate-800 bg-slate-100 text-slate-500 outline-none text-sm transition">
               <option value="">-- Pilih Kelas Terlebih Dahulu --</option>
             </select>
           </div>
 
           <div>
-            <label class="block text-sm font-semibold mb-1 text-slate-800">Pelanggaran</label>
-            <select id="indPelanggaran" required class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-slate-900 outline-none">
+            <label class="block text-sm font-bold mb-1.5 text-slate-700">Pelanggaran</label>
+            <select id="indPelanggaran" required class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-amber-400 focus:border-slate-800 outline-none text-sm transition">
               <option value="">-- Pilih Pelanggaran --</option>
             </select>
           </div>
 
           <div>
-            <label class="block text-sm font-semibold mb-1 text-slate-800">Keterangan Terlapor</label>
-            <textarea id="indKet" rows="3" placeholder="Detail kejadian, tempat, BAP singkat..." class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-slate-900 outline-none"></textarea>
+            <label class="block text-sm font-bold mb-1.5 text-slate-700">Keterangan Terlapor</label>
+            <textarea id="indKet" rows="3" placeholder="Detail kejadian, tempat, BAP singkat..." class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-amber-400 focus:border-slate-800 outline-none text-sm transition"></textarea>
           </div>
 
-          <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-amber-400 font-semibold py-2.5 rounded-lg transition shadow">Kirim Laporan Individu</button>
+          <button type="submit" class="w-full bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold py-3 rounded-xl transition duration-200 shadow-sm text-sm">
+            Kirim Laporan Individu
+          </button>
         </form>
 
         <!-- FORM KOLEKTIF -->
         <form id="formKolektif" onsubmit="simpanLaporKolektif(event)" class="space-y-4 hidden">
           <div>
-            <label class="block text-sm font-semibold mb-1 text-slate-800">Pelanggaran</label>
-            <select id="kolPelanggaran" required class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-slate-900 outline-none">
+            <label class="block text-sm font-bold mb-1.5 text-slate-700">Pelanggaran</label>
+            <select id="kolPelanggaran" required class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-amber-400 focus:border-slate-800 outline-none text-sm transition">
               <option value="">-- Pilih Pelanggaran --</option>
             </select>
           </div>
 
           <div class="relative">
-            <label class="block text-sm font-semibold mb-1 text-slate-800">Cari & Tambah Siswa</label>
-            <input type="text" id="kolSearch" oninput="liveSearchSiswa()" placeholder="Ketik nama siswa..." class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-slate-900 outline-none">
-            <div id="searchResults" class="absolute left-0 right-0 bg-white border rounded-lg shadow-lg mt-1 max-h-48 overflow-y-auto hidden z-10"></div>
+            <label class="block text-sm font-bold mb-1.5 text-slate-700">Cari & Tambah Siswa</label>
+            <input type="text" id="kolSearch" oninput="liveSearchSiswa()" placeholder="Ketik nama siswa..." class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-amber-400 focus:border-slate-800 outline-none text-sm transition">
+            <div id="searchResults" class="absolute left-0 right-0 bg-white border border-slate-200 rounded-xl shadow-lg mt-1 max-h-48 overflow-y-auto hidden z-10"></div>
           </div>
 
           <div>
-            <label class="block text-sm font-semibold mb-2 text-slate-800">Daftar Siswa Terlibat & Keterangan</label>
-            <div id="kolDaftarSiswa" class="space-y-2 min-h-[60px] border border-dashed border-slate-300 p-3 rounded-lg bg-slate-50">
+            <label class="block text-sm font-bold mb-2 text-slate-700">Daftar Siswa Terlibat & Keterangan</label>
+            <div id="kolDaftarSiswa" class="space-y-2 min-h-[60px] border border-dashed border-slate-300 p-3.5 rounded-xl bg-slate-50">
               <p id="kolEmptyMsg" class="text-xs text-slate-400 text-center py-2">Belum ada siswa yang ditambahkan.</p>
             </div>
           </div>
 
-          <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-amber-400 font-semibold py-2.5 rounded-lg transition shadow">Kirim Laporan Kolektif</button>
+          <button type="submit" class="w-full bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold py-3 rounded-xl transition duration-200 shadow-sm text-sm">
+            Kirim Laporan Kolektif
+          </button>
         </form>
 
       </div>
@@ -159,47 +169,47 @@
     <div id="sectionDashboard" class="max-w-5xl mx-auto mt-6 p-4 hidden">
       <!-- Ringkasan Stat -->
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        <div class="bg-white p-4 rounded-xl border-l-4 border-slate-900 shadow-sm">
-          <p class="text-xs text-slate-500 font-medium">Total Laporan</p>
-          <p id="statTotal" class="text-2xl font-bold text-slate-900">0</p>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Total Laporan</p>
+          <p id="statTotal" class="text-3xl font-extrabold text-slate-900 mt-1">0</p>
         </div>
-        <div class="bg-white p-4 rounded-xl border-l-4 border-emerald-500 shadow-sm">
-          <p class="text-xs text-slate-500 font-medium">Laporan Individu</p>
-          <p id="statIndividu" class="text-2xl font-bold text-emerald-600">0</p>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Laporan Individu</p>
+          <p id="statIndividu" class="text-3xl font-extrabold text-emerald-600 mt-1">0</p>
         </div>
-        <div class="bg-white p-4 rounded-xl border-l-4 border-amber-400 shadow-sm">
-          <p class="text-xs text-slate-500 font-medium">Laporan Kolektif</p>
-          <p id="statKolektif" class="text-2xl font-bold text-amber-600">0</p>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Laporan Kolektif</p>
+          <p id="statKolektif" class="text-3xl font-extrabold text-amber-500 mt-1">0</p>
         </div>
       </div>
 
       <!-- Control Box (Filter & Export) -->
-      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm mb-6 flex flex-col sm:flex-row justify-between items-center gap-3">
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm mb-6 flex flex-col sm:flex-row justify-between items-center gap-3">
         <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-          <select id="filterTipe" onchange="renderDashboardTable()" class="p-2 border rounded-lg text-sm bg-slate-50 outline-none">
+          <select id="filterTipe" onchange="renderDashboardTable()" class="p-2.5 border border-slate-300 rounded-xl text-sm bg-slate-50 outline-none focus:ring-2 focus:ring-amber-400">
             <option value="SEMUA">Semua Tipe Laporan</option>
             <option value="Individu">Hanya Individu</option>
             <option value="Kolektif">Hanya Kolektif</option>
           </select>
-          <input type="text" id="filterKeyword" oninput="renderDashboardTable()" placeholder="Cari nama / pelapor..." class="p-2 border rounded-lg text-sm outline-none">
+          <input type="text" id="filterKeyword" oninput="renderDashboardTable()" placeholder="Cari nama / pelapor..." class="p-2.5 border border-slate-300 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-400">
         </div>
-        <button onclick="exportToCSV()" class="w-full sm:w-auto bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-sm px-4 py-2 rounded-lg transition shadow">
+        <button onclick="exportToCSV()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm px-5 py-2.5 rounded-xl transition shadow-sm">
           Export ke Excel (CSV)
         </button>
       </div>
 
       <!-- Tabel Rekap Data -->
-      <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm text-slate-600">
-            <thead class="bg-slate-900 text-amber-400 uppercase text-xs font-semibold">
+            <thead class="bg-slate-900 text-amber-400 uppercase text-xs font-bold tracking-wider">
               <tr>
-                <th class="p-3">Tanggal</th>
-                <th class="p-3">Pelapor</th>
-                <th class="p-3">Tipe</th>
-                <th class="p-3">Pelanggaran</th>
-                <th class="p-3">Siswa Terlibat & Ket.</th>
-                <th class="p-3 text-center">Aksi</th>
+                <th class="p-3.5">Tanggal</th>
+                <th class="p-3.5">Pelapor</th>
+                <th class="p-3.5">Tipe</th>
+                <th class="p-3.5">Pelanggaran</th>
+                <th class="p-3.5">Siswa Terlibat & Ket.</th>
+                <th class="p-3.5 text-center">Aksi</th>
               </tr>
             </thead>
             <tbody id="rekapTableBody" class="divide-y divide-slate-100">
