@@ -1509,6 +1509,8 @@ function handleLogin(e) {
   e.preventDefault();
   const idInput = document.getElementById('loginId').value.trim();
   const passInput = document.getElementById('loginPass').value.trim();
+// Panggil fungsi ini tepat setelah akun berhasil terverifikasi/login
+checkUserRole(userAktif); // 'userAktif' adalah objek data user yang sedang login
 
   if (idInput !== passInput) {
     showError();
@@ -1659,6 +1661,41 @@ function showSection(sectionName) {
   const btnRekap = document.getElementById('navRekapBtn');
   const btnDash = document.getElementById('navDashboardBtn');
 
+  // 1. Reset warna semua tombol navigasi ke warna putih/abu
+  [btnForm, btnRekap, btnDash].forEach(btn => {
+    if (btn) {
+      btn.className = "px-5 py-2.5 bg-white text-slate-700 hover:bg-slate-200 border border-slate-300 rounded-xl text-sm font-semibold transition whitespace-nowrap";
+    }
+  });
+
+  // 2. Sembunyikan SEMUA section
+  if (secForm) secForm.classList.add('hidden');
+  if (secRekap) secRekap.classList.add('hidden');
+  if (secDash) secDash.classList.add('hidden');
+
+  // 3. Tampilkan section yang diklik & ubah warna tombolnya jadi hitam-emas
+  if (sectionName === 'form' && secForm) {
+    secForm.classList.remove('hidden');
+    if (btnForm) btnForm.className = "px-5 py-2.5 bg-slate-900 text-amber-400 rounded-xl text-sm font-bold shadow-sm transition whitespace-nowrap";
+  } 
+  else if (sectionName === 'rekap' && secRekap) {
+    secRekap.classList.remove('hidden');
+    if (btnRekap) btnRekap.className = "px-5 py-2.5 bg-slate-900 text-amber-400 rounded-xl text-sm font-bold shadow-sm transition whitespace-nowrap";
+    
+    // Jalankan render data rekap (aman dari crash jika data belum siap)
+    try {
+      renderRekapSiswa();
+    } catch (err) {
+      console.log("Rekap belum siap, menunggu variabel disesuaikan:", err);
+    }
+  } 
+  else if (sectionName === 'dashboard' && secDash) {
+    secDash.classList.remove('hidden');
+    if (btnDash) btnDash.className = "px-5 py-2.5 bg-slate-900 text-amber-400 rounded-xl text-sm font-bold shadow-sm transition whitespace-nowrap";
+    if (typeof renderDashboardTable === 'function') renderDashboardTable();
+  }
+}
+
   // Reset kelas tombol
   [btnForm, btnRekap, btnDash].forEach(btn => {
     if(btn) {
@@ -1671,7 +1708,7 @@ function renderRekapSiswa() {
   
   // Asumsi databaseSemuaLaporan berisi array objek laporan pelanggaran
   // [ { id, namaSiswa, kelas, pelanggaran, tanggal }, ... ]
-  const rawLaporan = window.databaseSemuaLaporan || []; 
+  const rawLaporan = window.dataLaporan || []; 
 
   // 1. Hitung Statistik Pelengkap (Point B)
   const todayStr = new Date().toISOString().split('T')[0];
