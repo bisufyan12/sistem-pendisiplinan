@@ -1505,12 +1505,51 @@ window.onload = function() {
 
 
 // ==================== 3. LOGIKA AUTH & NAVIGASI ====================
-function handleLogin(e) {
-  e.preventDefault();
-  const idInput = document.getElementById('loginId').value.trim();
-  const passInput = document.getElementById('loginPass').value.trim();
-// Panggil fungsi ini tepat setelah akun berhasil terverifikasi/login
-checkUserRole(userAktif); // 'userAktif' adalah objek data user yang sedang login
+function handleLogin(event) {
+  if (event) event.preventDefault(); // Mencegah halaman ke-refresh otomatis
+
+  const idInput = document.getElementById('loginId')?.value;
+  const passInput = document.getElementById('loginPass')?.value;
+  const errorEl = document.getElementById('loginError');
+
+  // =========================================================
+  // GANTI BAGIAN INI sesuai logic pencarian user di script.js kamu
+  // Contoh jika kamu pakai array 'dataGuru' / 'dataUser':
+  // const user = dataGuru.find(u => u.nip === idInput && u.pass === passInput);
+  // =========================================================
+  
+  // (Variabel penampung user hasil login kamu)
+  const user = window.userAktif || { nama: idInput, role: 'guru' }; // <-- Sesuaikan logic login kamu di sini
+
+  if (user) {
+    if (errorEl) errorEl.classList.add('hidden');
+
+    // Simpan user ke global window agar dibaca fungsi lain
+    window.currentUser = user;
+
+    // Set nama pelapor di header & form
+    const userPelapor = document.getElementById('userPelapor');
+    const infoPelapor = document.getElementById('infoNamaPelapor');
+    if (userPelapor) userPelapor.textContent = user.nama || idInput;
+    if (infoPelapor) infoPelapor.textContent = user.nama || idInput;
+
+    // Panggil role checker secara aman (tanpa bikin crash)
+    try {
+      checkUserRole(user);
+    } catch (err) {
+      console.warn("Role checker error, tapi login dilanjutkan:", err);
+    }
+
+    // PINDAH HALAMAN (Sembunyikan Login, Tampilkan Main App)
+    document.getElementById('pageLogin').classList.add('hidden');
+    document.getElementById('mainApp').classList.remove('hidden');
+
+    // Buka tab pertama (Form Input)
+    showSection('form');
+  } else {
+    if (errorEl) errorEl.classList.remove('hidden');
+  }
+}
 
   if (idInput !== passInput) {
     showError();
@@ -1637,19 +1676,24 @@ const NO_WA_TU = "628561166774";
 let statusPembinaanMap = JSON.parse(localStorage.getItem('statusPembinaanMap') || '{}');
 
 // Dipanggil saat login berhasil
-function checkUserRole(currentUser) {
+function checkUserRole(user) {
   const roleBadge = document.getElementById('userRoleBadge');
   const navAdminBtn = document.getElementById('navDashboardBtn');
 
-  // Cek apakah akun adalah Admin / Pembina
-  if (currentUser.role === 'admin' || currentUser.isPembina === true) {
-    roleBadge.textContent = "Guru Admin / Pembina";
-    navAdminBtn.classList.remove('hidden'); // Buka fitur ke-3
+  if (!user) return;
+
+  // Cek apakah user bertindak sebagai admin/pembina
+  const isAdmin = user.role === 'admin' || user.isPembina === true || user.role === 'pembina';
+
+  if (isAdmin) {
+    if (roleBadge) roleBadge.textContent = "Guru Admin / Pembina";
+    if (navAdminBtn) navAdminBtn.classList.remove('hidden'); // Munculkan Tab 3
   } else {
-    roleBadge.textContent = "Guru";
-    navAdminBtn.classList.add('hidden'); // Hanya 2 fitur
+    if (roleBadge) roleBadge.textContent = "Guru";
+    if (navAdminBtn) navAdminBtn.classList.add('hidden'); // Sembunyikan Tab 3
   }
 }
+
 
 // Pengendali Navigasi Tab
 function showSection(sectionName) {
