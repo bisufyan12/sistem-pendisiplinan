@@ -1628,6 +1628,215 @@ function filterSiswaIndividu() {
     selectSiswa.disabled = true;
     return;
   }
+// Nomor WhatsApp Tata Usaha (TU) SMAN 2 Karawang (Ganti dengan nomor tujuan)
+const NO_WA_TU = "628561166774"; 
+
+// Data status pembinaan simpan lokal / database (id_siswa -> boolean)
+let statusPembinaanMap = JSON.parse(localStorage.getItem('statusPembinaanMap') || '{}');
+
+// Dipanggil saat login berhasil
+function checkUserRole(currentUser) {
+  const roleBadge = document.getElementById('userRoleBadge');
+  const navAdminBtn = document.getElementById('navDashboardBtn');
+
+  // Cek apakah akun adalah Admin / Pembina
+  if (currentUser.role === 'admin' || currentUser.isPembina === true) {
+    roleBadge.textContent = "Guru Admin / Pembina";
+    navAdminBtn.classList.remove('hidden'); // Buka fitur ke-3
+  } else {
+    roleBadge.textContent = "Guru";
+    navAdminBtn.classList.add('hidden'); // Hanya 2 fitur
+  }
+}
+
+// Pengendali Navigasi Tab
+function showSection(sectionName) {
+  const secForm = document.getElementById('sectionForm');
+  const secRekap = document.getElementById('sectionRekap');
+  const secDash = document.getElementById('sectionDashboard');
+
+  const btnForm = document.getElementById('navFormBtn');
+  const btnRekap = document.getElementById('navRekapBtn');
+  const btnDash = document.getElementById('navDashboardBtn');
+
+  // Reset kelas tombol
+  [btnForm, btnRekap, btnDash].forEach(btn => {
+    if(btn) {
+      btn.className = "px-5 py-2.5 bg-white text-slate-700 hover:bg-slate-200 border border-slate-300 rounded-xl text-sm font-semibold transition whitespace-nowrap";
+    }
+  });
+function renderRekapSiswa() {
+  // Ambil keyword pencarian
+  const searchKey = (document.getElementById('searchSiswaRekap')?.value || '').toLowerCase();
+  
+  // Asumsi databaseSemuaLaporan berisi array objek laporan pelanggaran
+  // [ { id, namaSiswa, kelas, pelanggaran, tanggal }, ... ]
+  const rawLaporan = window.databaseSemuaLaporan || []; 
+
+  // 1. Hitung Statistik Pelengkap (Point B)
+  const todayStr = new Date().toISOString().split('T')[0];
+  let cntHari = 0, cntMinggu = 0, cntBulan = 0;
+  const now = new Date();
+
+  rawLaporan.forEach(item => {
+    const tgl = new Date(item.tanggal);
+    if (item.tanggal === todayStr) cntHari++;
+    
+    // Selisih hari untuk minggu ini
+    const diffDays = Math.floor((now - tgl) / (1000 * 60 * 60 * 24));
+    if (diffDays <= 7) cntMinggu++;
+
+    // Bulan ini
+    if (tgl.getMonth() === now.getMonth() && tgl.getFullYear() === now.getFullYear()) {
+      cntBulan++;
+    }
+  });
+
+  document.getElementById('statHariIni').textContent = cntHari;
+  document.getElementById('statMingguIni').textContent = cntMinggu;
+  document.getElementById('statBulanIni').textContent = cntBulan;
+
+  // 2. Agregasi Data per Nama Siswa
+  const siswaMap = {}; // Key: nama_kelas
+
+  rawLaporan.forEach(item => {
+    const key = `${item.namaSiswa} (${item.kelas})`;
+    if (!siswaMap[key]) {
+      siswaMap[key] = {
+        nama: item.namaSiswa,
+        kelas: item.kelas,
+        total: 0,
+        pelanggaranList: {}
+      };
+    }
+
+    siswaMap[key].total += 1;
+    siswaMap[key].pelanggaranList[item.pelanggaran] = (siswaMap[key].pelanggaranList[item.pelanggaran] || 0) + 1;
+  });
+
+  // Convert map ke Array & Urutkan dari total TERBANYAK
+  let rekapList = Object.values(siswaMap).sort((a, b) => b.total - a.total);
+
+  // Set Statistik Total Siswa Unik
+  document.getElementById('statTotalSiswaUnik').textContent = rekapList.length;
+
+  // Filterberdasarkan Keyword
+  if (searchKey) {
+    rekapList = rekapList.filter(s => 
+      s.nama.toLowerCase().includes(searchKey) || s.kelas.toLowerCase().includes(searchKey)
+    );
+  }
+
+  // 3. Render ke Tabel (Point A)
+  const tbody = document.getElementById('rekapSiswaBody');
+  tbody.innerHTML = '';
+
+  if (rekapList.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-xs text-slate-400">Tidak ada data pelanggaran siswa.</td></tr>`;
+    return;
+  }
+
+  const currentUser = window.currentUser || { role: 'guru' };
+  const isAdmin = currentUser.role === 'admin' || currentUser.isPembina;
+
+  rekapList.forEach((siswa, index) => {
+    // Format list rincian pelanggaran (misal: Terlambat 5x, Rambut tidak pantas 2x)
+    const detailPelanggaranStr = Object.entries(siswa.pelanggaranList)
+      .map(([jenis, jml]) => `<span class="inline-block bg-slate-100 border border-slate-200 text-slate-700 text-[11px] px-2 py-0.5 rounded-md mr-1 mb-1"><b>${jenis}</b>: ${jml}x</span>`)
+      .join('');
+
+    const siswaId = `${siswa.nama}_${siswa.kelas}`.replace(/\s+/g, '_');
+    const isSudahPembinaan = !!statusPembinaanMap[siswaId];
+
+    const tr = document.createElement('tr');
+    tr.className = "hover:bg-slate-50 transition border-b border-slate-100 text-xs sm:text-sm";
+    tr.innerHTML = `
+      <td class="p-3 text-center font-bold text-slate-400">#${index + 1}</td>
+      <td class="p-3">
+        <p class="font-bold text-slate-900">${siswa.nama}</p>
+        <p class="text-xs text-slate-500">${siswa.kelas}</p>
+      </td>
+      <td class="p-3">${detailPelanggaranStr}</td>
+      <td class="p-3 text-center">
+        <span class="inline-block px-2.5 py-1 rounded-full text-xs font-black bg-rose-100 text-rose-700">
+          ${siswa.total}
+        </span>
+      </td>
+      <td class="p-3 text-center">
+        <label class="inline-flex items-center gap-1.5 cursor-pointer">
+          <input type="checkbox" 
+            ${isSudahPembinaan ? 'checked' : ''} 
+            ${!isAdmin ? 'disabled' : ''} 
+            onchange="togglePembinaan('${siswaId}', this.checked)"
+            class="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-400 border-slate-300 ${!isAdmin ? 'opacity-60 cursor-not-allowed' : ''}">
+          <span class="text-xs ${isSudahPembinaan ? 'font-bold text-emerald-600' : 'text-slate-400'}">
+            ${isSudahPembinaan ? 'Sudah' : 'Belum'}
+          </span>
+        </label>
+      </td>
+      <td class="p-3 text-center">
+        <button onclick="kirimWAKeTU('${siswa.nama}', '${siswa.kelas}', '${encodeURIComponent(JSON.stringify(siswa.pelanggaranList))}', ${siswa.total})" 
+          class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition shadow-sm flex items-center justify-center gap-1 mx-auto">
+          💬 Kirim WA TU
+        </button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// Toggle Centang Pembinaan (Khusus Admin/Pembina)
+function togglePembinaan(siswaId, isChecked) {
+  statusPembinaanMap[siswaId] = isChecked;
+  localStorage.setItem('statusPembinaanMap', JSON.stringify(statusPembinaanMap));
+  renderRekapSiswa(); // Refresh tampilan
+}
+function kirimWAKeTU(nama, kelas, rawPelanggaranJson, total) {
+  const pelanggaranList = JSON.parse(decodeURIComponent(rawPelanggaranJson));
+  
+  // Menyusun daftar teks rincian
+  let rincianTeks = "";
+  Object.entries(pelanggaranList).forEach(([jenis, jumlah]) => {
+    rincianTeks += `- ${jenis}: ${jumlah}x\n`;
+  });
+
+  // Template Pesan WA Resmi Surat Panggilan
+  const pesan = `Yth. Bagian Tata Usaha (TU) SMAN 2 Karawang,
+
+Mohon dapat dibuatkan *SURAT PANGGILAN ORANG TUA / WALI SISWA* dengan rincian data sebagai berikut:
+
+📌 *NAMA SISWA*: ${nama}
+🏫 *KELAS*: ${kelas}
+⚠️ *TOTAL PELANGGARAN*: ${total} kali
+
+*Rincian Catatan Pelanggaran*:
+${rincianTeks}
+Demikian permohonan ini disampaikan dari sistem pendisiplinan SIPS SMANDA untuk diproses lebih lanjut. Terima kasih.`;
+
+  // Buka link WhatsApp API
+  const urlWA = `https://wa.me/${NO_WA_TU}?text=${encodeURIComponent(pesan)}`;
+  window.open(urlWA, '_blank');
+}
+
+  // Hide semua section
+  secForm.classList.add('hidden');
+  secRekap.classList.add('hidden');
+  secDash.classList.add('hidden');
+
+  // Aktivasi section sesuai pilihan
+  if (sectionName === 'form') {
+    secForm.classList.remove('hidden');
+    btnForm.className = "px-5 py-2.5 bg-slate-900 text-amber-400 rounded-xl text-sm font-bold shadow-sm transition whitespace-nowrap";
+  } else if (sectionName === 'rekap') {
+    secRekap.classList.remove('hidden');
+    btnRekap.className = "px-5 py-2.5 bg-slate-900 text-amber-400 rounded-xl text-sm font-bold shadow-sm transition whitespace-nowrap";
+    renderRekapSiswa(); // Hitung ulang data rekap
+  } else if (sectionName === 'dashboard') {
+    secDash.classList.remove('hidden');
+    btnDash.className = "px-5 py-2.5 bg-slate-900 text-amber-400 rounded-xl text-sm font-bold shadow-sm transition whitespace-nowrap";
+    renderDashboardTable();
+  }
+}
 
   const filtered = DATA_SISWA.filter(s => s.kelas === kelas);
   filtered.forEach(s => {
