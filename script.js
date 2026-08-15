@@ -1,84 +1,206 @@
 // ==========================================
-// 0. INISIALISASI SUPABASE (HANYA DI SINI)
 // ==========================================
-const SUPABASE_URL = 'https://cymgrwdjhsrgmhgkaraj.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN5bWdyd2RqaHNyZ21oZ2thcmFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY1MjM2NzMsImV4cCI6MjEwMjA5OTY3M30.3D6orIlB6ISe9e000b-cgcmZcQxOG_O3jX3WSmDnT28';
+// 0. INISIALISASI SUPABASE
+// ==========================================
 
+const SUPABASE_URL = 'https://cymgrwdjhsrgmhgkaraj.supabase.co';
+
+const SUPABASE_ANON_KEY =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN5bWd3ZHdqaHNyZ21oZ2thcmFqIiwicm9iIjo...';
+
+// Client Supabase
 let dbClient = null;
 
+
+// ==========================================
+// FUNGSI KONEKSI SUPABASE
+// ==========================================
+
 function getSupabase() {
-  if (!dbClient) {
-    if (window.supabase && typeof window.supabase.createClient === 'function') {
-      dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    } else {
-      console.error('Library Supabase CDN belum ter-load di index.html!');
-    }
+
+  // Jika client sudah dibuat, gunakan kembali
+  if (dbClient) {
+    return dbClient;
   }
+
+  // Pastikan library Supabase tersedia
+  if (
+    !window.supabase ||
+    typeof window.supabase.createClient !== 'function'
+  ) {
+    console.error(
+      'Supabase CDN belum ter-load. Periksa index.html.'
+    );
+
+    return null;
+  }
+
+  // Buat client Supabase
+  dbClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
+
   return dbClient;
 }
 
+
+// ==========================================
 // SIMPAN LAPORAN KE SUPABASE
+// ==========================================
+
 async function saveDataToSupabase(lapObj) {
+
   try {
+
     const client = getSupabase();
+
     if (!client) {
-      alert('Koneksi Supabase belum siap!');
+      alert('Koneksi Supabase belum siap.');
       return false;
     }
 
     const { data, error } = await client
       .from('laporan_siswa')
-      .insert([lapObj]);
+      .insert([lapObj])
+      .select();
 
     if (error) {
-      console.error('Error Supabase Insert:', error);
-      alert('Gagal menyimpan ke Supabase: ' + error.message);
+
+      console.error(
+        'Error Supabase Insert:',
+        error
+      );
+
+      alert(
+        'Gagal menyimpan laporan:\n' +
+        error.message
+      );
+
       return false;
     }
 
-    alert('Berhasil! Laporan telah tersimpan ke Supabase.');
+    console.log(
+      'Laporan berhasil disimpan:',
+      data
+    );
+
+    // Ambil ulang data terbaru
     await fetchLaporanFromSupabase();
+
     return true;
+
   } catch (err) {
-    console.error('Exception saveDataToSupabase:', err);
-    alert('Terjadi kesalahan: ' + err.message);
+
+    console.error(
+      'Exception saveDataToSupabase:',
+      err
+    );
+
+    alert(
+      'Terjadi kesalahan:\n' +
+      err.message
+    );
+
     return false;
   }
 }
 
+
+// ==========================================
 // AMBIL LAPORAN DARI SUPABASE
+// ==========================================
+
 async function fetchLaporanFromSupabase() {
-  const client = getSupabase();
-  if (!client) return;
 
-  const { data, error } = await client
-    .from('laporan_siswa')
-    .select('*')
-    .order('created_at', { ascending: false });
+  try {
 
-  if (error) {
-    console.error('Gagal mengambil data dari Supabase:', error.message);
-    return;
-  }
+    const client = getSupabase();
 
-  if (data) {
-    listLaporan = data;
-    if (!document.getElementById('sectionRekap').classList.contains('hidden')) renderRekapSiswa();
-    if (!document.getElementById('sectionDashboard').classList.contains('hidden')) renderDashboardTable();
+    if (!client) {
+      return;
+    }
+
+    const { data, error } = await client
+      .from('laporan_siswa')
+      .select('*')
+      .order('created_at', {
+        ascending: false
+      });
+
+    if (error) {
+
+      console.error(
+        'Gagal mengambil data dari Supabase:',
+        error
+      );
+
+      return;
+    }
+
+    if (data) {
+
+      listLaporan = data;
+
+      // Update rekap jika sedang dibuka
+      const sectionRekap =
+        document.getElementById('sectionRekap');
+
+      if (
+        sectionRekap &&
+        !sectionRekap.classList.contains('hidden')
+      ) {
+        renderRekapSiswa();
+      }
+
+
+      // Update dashboard jika sedang dibuka
+      const sectionDashboard =
+        document.getElementById('sectionDashboard');
+
+      if (
+        sectionDashboard &&
+        !sectionDashboard.classList.contains('hidden')
+      ) {
+        renderDashboardTable();
+      }
+
+    }
+
+  } catch (err) {
+
+    console.error(
+      'Exception fetchLaporanFromSupabase:',
+      err
+    );
+
   }
 }
-// 1. MASTER DATA PELANGGARAN
-const DATA_PELANGGARAN = [
-  "Terlambat Masuk Sekolah",
-  "Atribut Seragam Tidak Lengkap / Non-Standar",
-  "Rambut / Kuku / Aksesoris Tidak Sesuai Aturan",
-  "Meninggalkan Kelas / Bolos Tanpa Izin",
-  "Menggunakan HP Saat KBM Tanpa Izin",
-  "Merokok / Vaping di Lingkungan Sekolah",
-  "Keterlibatan Perkelahian / Bullying",
-  "Tindakan Indisipliner Lainnya"
-];
 
+
+// ==========================================
+// 1. MASTER DATA PELANGGARAN
+// ==========================================
+
+const DATA_PELANGGARAN = [
+
+  "Terlambat Masuk Sekolah",
+
+  "Atribut Seragam Tidak Lengkap / Non-Standar",
+
+  "Rambut / Kuku / Aksesoris Tidak Sesuai Aturan",
+
+  "Meninggalkan Kelas / Bolos Tanpa Izin",
+
+  "Menggunakan HP Saat KBM Tanpa Izin",
+
+  "Merokok / Vaping di Lingkungan Sekolah",
+
+  "Keterlibatan Perkelahian / Bullying",
+
+  "Tindakan Indisipliner Lainnya"
+
+];
 // 2. MASTER DATA GURU
 const DATA_GURU = [
   { nip: '19800101', nama: 'Budi Santoso, S.Pd.', isPembina: true }, // Diberi flag Admin
