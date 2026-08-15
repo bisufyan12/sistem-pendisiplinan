@@ -1984,25 +1984,28 @@ async function simpanLaporIndividu(e) {
 // Update Hapus Laporan dari Supabase
 async function hapusLaporan(id) {
   if (!currentUser || !currentUser.isPembina) {
-    alert('Akses Ditolak!');
+    alert('Akses Ditolak! Hanya Pembina yang dapat menghapus data.');
     return;
   }
 
   if (confirm('Apakah Anda yakin ingin menghapus laporan ini?')) {
-    const { error } = await supabase
-      .from('laporan')
+    const client = getSupabase();
+    if (!client) return;
+
+    const { error } = await client
+      .from('laporan_siswa')
       .delete()
       .eq('id', id);
 
     if (error) {
-      alert('Gagal menghapus data: ' + error.message);
+      alert('Gagal menghapus data dari Supabase: ' + error.message);
     } else {
+      alert('Laporan berhasil dihapus!');
+      // Ambil ulang data terbaru dari Supabase
       await fetchLaporanFromSupabase();
-      renderDashboardTable();
     }
   }
 }
-
 // REKAPITULASI SISWA
 // Helper Global untuk membaca data siswa dari Supabase (JSON / Array / String)
 function getSiswaArray(siswaData) {
