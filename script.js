@@ -1919,6 +1919,7 @@ function renderSelectedKolektif() {
 // }
 
 // SIMPAN LAPORAN KOLEKTIF KE SUPABASE
+// SIMPAN LAPORAN KOLEKTIF KE SUPABASE
 async function simpanLaporKolektif(e) {
   if (e) e.preventDefault();
 
@@ -1930,19 +1931,23 @@ async function simpanLaporKolektif(e) {
   const tgl = document.getElementById('tglLaporan').value || new Date().toISOString().split('T')[0];
   const pel = document.getElementById('kolPelanggaran').value;
 
+  // Format data untuk Supabase
   const lapObj = {
     tanggal: tgl,
     pelapor: currentUser ? currentUser.nama : 'Guru Pelapor',
     tipe: 'Kolektif',
     pelanggaran: pel,
-    siswa: selectedKolektifSiswa // Array objek [{nama, kelas, ket}]
+    // Mengubah array daftar siswa menjadi teks JSON agar aman di Supabase
+    siswa: typeof selectedKolektifSiswa === 'string' 
+      ? selectedKolektifSiswa 
+      : JSON.stringify(selectedKolektifSiswa)
   };
 
   // Simpan ke Supabase
   const ok = await saveDataToSupabase(lapObj);
 
   if (ok) {
-    // Reset daftar siswa kolektif setelah berhasil
+    // Reset formulir & array temporary setelah berhasil disimpan
     selectedKolektifSiswa = [];
     renderSelectedKolektif();
     const formKol = document.getElementById('formKolektif');
@@ -2079,12 +2084,34 @@ function renderDashboardTable() {
   const tipe = document.getElementById('filterTipe').value;
   const kw = document.getElementById('filterKeyword').value.toLowerCase();
 
+  // Helper aman untuk mengubah l.siswa menjadi Array
+  const getSiswaArray = (siswaData) => {
+    if (!siswaData) return [];
+    if (Array.isArray(siswaData)) return siswaData;
+    if (typeof siswaData === 'string') {
+      try {
+        const parsed = JSON.parse(siswaData);
+        return Array.isArray(parsed) ? parsed : [{ nama: siswaData, kelas: '-', ket: '' }];
+      } catch (e) {
+        return [{ nama: siswaData, kelas: '-', ket: '' }];
+      }
+    }
+    return [];
+  };
+
   let filtered = [...listLaporan];
+  
   if (tipe !== 'SEMUA') {
     filtered = filtered.filter(l => l.tipe === tipe);
   }
+
   if (kw) {
-    filtered = filtered.filter(l => l.pelapor.toLowerCase().includes(kw) || l.siswa.some(s => s.nama.toLowerCase().includes(kw)));
+    filtered = filtered.filter(l => {
+      const pelaporMatch = l.pelapor ? l.pelapor.toLowerCase().includes(kw) : false;
+      const siswaArr = getSiswaArray(l.siswa);
+      const siswaMatch = siswaArr.some(s => s.nama && s.nama.toLowerCase().includes(kw));
+      return pelaporMatch || siswaMatch;
+    });
   }
 
   document.getElementById('statTotal').innerText = listLaporan.length;
@@ -2097,22 +2124,30 @@ function renderDashboardTable() {
     return;
   }
 
-  tbody.innerHTML = filtered.map(l => `
-    <tr class="hover:bg-slate-50 border-b border-slate-100">
-      <td class="p-3.5 text-xs font-semibold text-slate-700">${l.tanggal}</td>
-      <td class="p-3.5 font-semibold text-slate-800 text-xs">${l.pelapor}</td>
-      <td class="p-3.5 text-xs"><span class="px-2 py-0.5 rounded font-bold ${l.tipe === 'Individu' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${l.tipe}</span></td>
-      <td class="p-3.5 text-xs font-semibold">${l.pelanggaran}</td>
-      <td class="p-3.5 text-xs">${l.siswa.map(s => `<b>${s.nama} (${s.kelas})</b> ${s.ket ? ': ' + s.ket : ''}`).join('<br>')}</td>
-      <td class="p-3.5 text-center">
-        ${currentUser && currentUser.isPembina 
-          ? `<button onclick="hapusLaporan(${l.id})" class="text-xs text-rose-600 hover:underline font-bold">Hapus</button>`
-          : `<span class="text-xs text-slate-400 font-semibold italic">-</span>`
-        }
-      </td>
-    </tr>
-  `).join('');
+  tbody.innerHTML = filtered.map(l => {
+    const siswaArr = getSiswaArray(l.siswa);
+    const renderSiswaText = siswaArr.length > 0 
+      ? siswaArr.map(s => `<b>${s.nama} (${s.kelas || '-'})</b> ${s.ket ? ': ' + s.ket : ''}`).join('<br>')
+      : '-';
+
+    return `
+      <tr class="hover:bg-slate-50 border-b border-slate-100">
+        <td class="p-3.5 text-xs font-semibold text-slate-700">${l.tanggal || '-'}</td>
+        <td class="p-3.5 font-semibold text-slate-800 text-xs">${l.pelapor || '-'}</td>
+        <td class="p-3.5 text-xs"><span class="px-2 py-0.5 rounded font-bold ${l.tipe === 'Individu' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${l.tipe || 'Individu'}</span></td>
+        <td class="p-3.5 text-xs font-semibold">${l.pelanggaran || '-'}</td>
+        <td class="p-3.5 text-xs">${renderSiswaText}</td>
+        <td class="p-3.5 text-center">
+          ${currentUser && currentUser.isPembina 
+            ? `<button onclick="hapusLaporan(${l.id})" class="text-xs text-rose-600 hover:underline font-bold">Hapus</button>`
+            : `<span class="text-xs text-slate-400 font-semibold italic">-</span>`
+          }
+        </td>
+      </tr>
+    `;
+  }).join('');
 }
+
 function bukaModalPanggilan(nama, kelas, total) {
   selectedSiswaPanggilan = { nama, kelas, total };
   
