@@ -68,75 +68,75 @@ async function fetchLaporanFromSupabase() {
   }
 }
 
-// ==========================================
-// AMBIL LAPORAN DARI SUPABASE
-// ==========================================
+// // ==========================================
+// // AMBIL LAPORAN DARI SUPABASE
+// // ==========================================
 
-async function fetchLaporanFromSupabase() {
+// async function fetchLaporanFromSupabase() {
 
-  try {
+//   try {
 
-    const client = getSupabase();
+//     const client = getSupabase();
 
-    if (!client) {
-      return;
-    }
+//     if (!client) {
+//       return;
+//     }
 
-    const { data, error } = await client
-      .from('laporan_siswa')
-      .select('*')
-      .order('created_at', {
-        ascending: false
-      });
+//     const { data, error } = await client
+//       .from('laporan_siswa')
+//       .select('*')
+//       .order('created_at', {
+//         ascending: false
+//       });
 
-    if (error) {
+//     if (error) {
 
-      console.error(
-        'Gagal mengambil data dari Supabase:',
-        error
-      );
+//       console.error(
+//         'Gagal mengambil data dari Supabase:',
+//         error
+//       );
 
-      return;
-    }
+//       return;
+//     }
 
-    if (data) {
+//     if (data) {
 
-      listLaporan = data;
+//       listLaporan = data;
 
-      // Update rekap jika sedang dibuka
-      const sectionRekap =
-        document.getElementById('sectionRekap');
+//       // Update rekap jika sedang dibuka
+//       const sectionRekap =
+//         document.getElementById('sectionRekap');
 
-      if (
-        sectionRekap &&
-        !sectionRekap.classList.contains('hidden')
-      ) {
-        renderRekapSiswa();
-      }
+//       if (
+//         sectionRekap &&
+//         !sectionRekap.classList.contains('hidden')
+//       ) {
+//         renderRekapSiswa();
+//       }
 
 
-      // Update dashboard jika sedang dibuka
-      const sectionDashboard =
-        document.getElementById('sectionDashboard');
+//       // Update dashboard jika sedang dibuka
+//       const sectionDashboard =
+//         document.getElementById('sectionDashboard');
 
-      if (
-        sectionDashboard &&
-        !sectionDashboard.classList.contains('hidden')
-      ) {
-        renderDashboardTable();
-      }
+//       if (
+//         sectionDashboard &&
+//         !sectionDashboard.classList.contains('hidden')
+//       ) {
+//         renderDashboardTable();
+//       }
 
-    }
+//     }
 
-  } catch (err) {
+//   } catch (err) {
 
-    console.error(
-      'Exception fetchLaporanFromSupabase:',
-      err
-    );
+//     console.error(
+//       'Exception fetchLaporanFromSupabase:',
+//       err
+//     );
 
-  }
-}
+//   }
+// }
 
 
 // ==========================================
