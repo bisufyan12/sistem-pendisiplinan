@@ -1,17 +1,17 @@
-// 0. INISIALISASI SUPABASE
+// ==========================================
+// 0. INISIALISASI SUPABASE (HANYA DI SINI)
+// ==========================================
 const SUPABASE_URL = 'https://cymgrwdjhsrgmhgkaraj.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN5bWdyd2RqaHNyZ21oZ2thcmFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY1MjM2NzMsImV4cCI6MjEwMjA5OTY3M30.3D6orIlB6ISe9e000b-cgcmZcQxOG_O3jX3WSmDnT28';
 
-// Gunakan nama variabel global yang berbeda dari nama library CDN
 let dbClient = null;
 
 function getSupabase() {
   if (!dbClient) {
-    // Membaca aman dari objek global window.supabase (dari CDN)
     if (window.supabase && typeof window.supabase.createClient === 'function') {
       dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     } else {
-      console.error('Library Supabase CDN belum ter-load!');
+      console.error('Library Supabase CDN belum ter-load di index.html!');
     }
   }
   return dbClient;
@@ -22,7 +22,7 @@ async function saveDataToSupabase(lapObj) {
   try {
     const client = getSupabase();
     if (!client) {
-      alert('Koneksi Supabase belum siap. Pastikan script CDN Supabase sudah terpasang di index.html');
+      alert('Koneksi Supabase belum siap!');
       return false;
     }
 
@@ -67,7 +67,6 @@ async function fetchLaporanFromSupabase() {
     if (!document.getElementById('sectionDashboard').classList.contains('hidden')) renderDashboardTable();
   }
 }
-
 // 1. MASTER DATA PELANGGARAN
 const DATA_PELANGGARAN = [
   "Terlambat Masuk Sekolah",
