@@ -1957,20 +1957,6 @@ function simpanLaporKolektif(e) {
   document.getElementById('formKolektif').reset();
 }
 
-// Simpan Laporan Baru ke Supabase
-async function saveDataToSupabase(lapObj) {
-  const { data, error } = await supabase
-    .from('laporan')
-    .insert([lapObj]);
-
-  if (error) {
-    alert('Gagal menyimpan ke database Supabase: ' + error.message);
-    return false;
-  }
-  
-  await fetchLaporanFromSupabase();
-  return true;
-}
 
 // Update simpanLaporIndividu
 async function simpanLaporIndividu(e) {
