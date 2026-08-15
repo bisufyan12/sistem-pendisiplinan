@@ -2024,7 +2024,7 @@ function getSiswaArray(siswaData) {
 
 // PERBAIKAN RENDER REKAP SISWA
 function renderRekapSiswa() {
-  const container = document.getElementById('rekapSiswaContainer'); // Sesuaikan ID container/tabel rekap Anda
+  const container = document.getElementById('navRekapBtn'); // Sesuaikan ID container/tabel rekap Anda
   if (!container) return;
 
   if (listLaporan.length === 0) {
