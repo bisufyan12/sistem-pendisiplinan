@@ -18,15 +18,47 @@ function getSupabase() {
   return supabaseClient;
 }
 
-// 2. Ambil Data
+// SIMPAN LAPORAN KE SUPABASE
+async function saveDataToSupabase(lapObj) {
+  try {
+    const client = getSupabase();
+    if (!client) {
+      alert('Koneksi Supabase belum siap. Periksa koneksi internet Anda.');
+      return false;
+    }
+
+    const { data, error } = await client
+      .from('laporan_siswa')
+      .insert([lapObj]);
+
+    if (error) {
+      console.error('Error Supabase Insert:', error);
+      alert('Gagal menyimpan ke Supabase: ' + error.message);
+      return false;
+    }
+
+    alert('Berhasil! Laporan telah tersimpan ke Supabase.');
+    await fetchLaporanFromSupabase();
+    return true;
+  } catch (err) {
+    console.error('Exception saveDataToSupabase:', err);
+    alert('Terjadi kesalahan: ' + err.message);
+    return false;
+  }
+}
+
+// AMBIL LAPORAN DARI SUPABASE
 async function fetchLaporanFromSupabase() {
-  const { data, error } = await supabaseClient
+  const client = getSupabase();
+  if (!client) return;
+
+  const { data, error } = await client
     .from('laporan_siswa')
     .select('*')
     .order('created_at', { ascending: false });
 
   if (error) {
-    console.error('Gagal mengambil data:', error.message);
+    console.error('Gagal mengambil data dari Supabase:', error.message);
     return;
   }
 
@@ -37,42 +69,6 @@ async function fetchLaporanFromSupabase() {
   }
 }
 
-// 3. Simpan Data
-async function saveDataToSupabase(lapObj) {
-  const { data, error } = await supabaseClient
-    .from('laporan_siswa')
-    .insert([lapObj]);
-
-  if (error) {
-    alert('Gagal menyimpan ke Supabase: ' + error.message);
-    return false;
-  }
-  
-  await fetchLaporanFromSupabase();
-  return true;
-}
-
-// 4. Hapus Data
-async function hapusLaporan(id) {
-  if (!currentUser || !currentUser.isPembina) {
-    alert('Akses Ditolak!');
-    return;
-  }
-
-  if (confirm('Apakah Anda yakin ingin menghapus laporan ini?')) {
-    const { error } = await supabaseClient
-      .from('laporan_siswa')
-      .delete()
-      .eq('id', id);
-
-    if (error) {
-      alert('Gagal menghapus data: ' + error.message);
-    } else {
-      await fetchLaporanFromSupabase();
-      renderDashboardTable();
-    }
-  }
-}
 // 1. MASTER DATA PELANGGARAN
 const DATA_PELANGGARAN = [
   "Terlambat Masuk Sekolah",
