@@ -2,7 +2,21 @@
 const SUPABASE_URL = 'https://cymgrwdjhsrgmhgkaraj.supabase.co'; // Ganti dengan URL Supabase Anda
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN5bWdyd2RqaHNyZ21oZ2thcmFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY1MjM2NzMsImV4cCI6MjEwMjA5OTY3M30.3D6orIlB6ISe9e000b-cgcmZcQxOG_O3jX3WSmDnT28';       // Ganti dengan Anon Key Supabase Anda
 // Ubah dari 'const supabase' menjadi 'const supabaseClient'
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let supabaseClient = null;
+
+// Fungsi untuk memastikan client Supabase siap digunakan
+function getSupabase() {
+  if (!supabaseClient) {
+    // Membaca createClient dari CDN (mendukung berbagai versi CDN)
+    const createClientFn = window.supabase?.createClient || window.Supabase?.createClient;
+    if (createClientFn) {
+      supabaseClient = createClientFn(SUPABASE_URL, SUPABASE_ANON_KEY);
+    } else {
+      console.error('Library Supabase CDN belum ter-load!');
+    }
+  }
+  return supabaseClient;
+}
 
 // 2. Ambil Data
 async function fetchLaporanFromSupabase() {
