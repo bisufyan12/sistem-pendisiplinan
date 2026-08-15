@@ -1,111 +1,72 @@
 // ==========================================
+// 0. INISIALISASI DATABASE SUPABASE
 // ==========================================
-// 0. INISIALISASI SUPABASE
-// ==========================================
-
 const SUPABASE_URL = 'https://cymgrwdjhsrgmhgkaraj.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN5bWdyd2RqaHNyZ21oZ2thcmFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY1MjM2NzMsImV4cCI6MjEwMjA5OTY3M30.3D6orIlB6ISe9e000b-cgcmZcQxOG_O3jX3WSmDnT28';
 
-const SUPABASE_ANON_KEY =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN5bWdyd2RqaHNyZ21oZ2thcmFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY1MjM2NzMsImV4cCI6MjEwMjA5OTY3M30.3D6orIlB6ISe9e000b-cgcmZcQxOG_O3jX3WSmDnT28';
-
-// Client Supabase
 let dbClient = null;
 
-
-// ==========================================
-// FUNGSI KONEKSI SUPABASE
-// ==========================================
-
 function getSupabase() {
-
-  // Jika client sudah dibuat, gunakan kembali
-  if (dbClient) {
-    return dbClient;
+  if (!dbClient) {
+    if (window.supabase && typeof window.supabase.createClient === 'function') {
+      dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    } else {
+      console.error('Library Supabase CDN belum ter-load!');
+    }
   }
-
-  // Pastikan library Supabase tersedia
-  if (
-    !window.supabase ||
-    typeof window.supabase.createClient !== 'function'
-  ) {
-    console.error(
-      'Supabase CDN belum ter-load. Periksa index.html.'
-    );
-
-    return null;
-  }
-
-  // Buat client Supabase
-  dbClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
-  );
-
   return dbClient;
 }
 
-
-// ==========================================
 // SIMPAN LAPORAN KE SUPABASE
-// ==========================================
-
 async function saveDataToSupabase(lapObj) {
-
   try {
-
     const client = getSupabase();
-
     if (!client) {
-      alert('Koneksi Supabase belum siap.');
+      alert('Koneksi Supabase belum siap. Periksa script CDN di index.html');
       return false;
     }
 
     const { data, error } = await client
       .from('laporan_siswa')
-      .insert([lapObj])
-      .select();
+      .insert([lapObj]);
 
     if (error) {
-
-      console.error(
-        'Error Supabase Insert:',
-        error
-      );
-
-      alert(
-        'Gagal menyimpan laporan:\n' +
-        error.message
-      );
-
+      console.error('Error Supabase Insert:', error);
+      alert('Gagal menyimpan ke Supabase: ' + error.message);
       return false;
     }
 
-    console.log(
-      'Laporan berhasil disimpan:',
-      data
-    );
-
-    // Ambil ulang data terbaru
+    alert('Berhasil! Laporan telah tersimpan ke database Supabase.');
     await fetchLaporanFromSupabase();
-
     return true;
-
   } catch (err) {
-
-    console.error(
-      'Exception saveDataToSupabase:',
-      err
-    );
-
-    alert(
-      'Terjadi kesalahan:\n' +
-      err.message
-    );
-
+    console.error('Exception saveDataToSupabase:', err);
+    alert('Terjadi kesalahan: ' + err.message);
     return false;
   }
 }
 
+// AMBIL LAPORAN DARI SUPABASE
+async function fetchLaporanFromSupabase() {
+  const client = getSupabase();
+  if (!client) return;
+
+  const { data, error } = await client
+    .from('laporan_siswa')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Gagal mengambil data dari Supabase:', error.message);
+    return;
+  }
+
+  if (data) {
+    listLaporan = data;
+    if (!document.getElementById('sectionRekap').classList.contains('hidden')) renderRekapSiswa();
+    if (!document.getElementById('sectionDashboard').classList.contains('hidden')) renderDashboardTable();
+  }
+}
 
 // ==========================================
 // AMBIL LAPORAN DARI SUPABASE
