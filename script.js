@@ -1867,55 +1867,87 @@ function renderSelectedKolektif() {
 }
 
 // SIMPAN & DATA (Menggunakan Tanggal Pilihan)
-function simpanLaporIndividu(e) {
-  e.preventDefault();
-  const tgl = document.getElementById('tglLaporan').value || new Date().toISOString().split('T')[0];
-  const kls = document.getElementById('indKelas').value;
-  const siswa = document.getElementById('indSiswa').value;
-  const pel = document.getElementById('indPelanggaran').value;
-  const ket = document.getElementById('indKet').value;
+// function simpanLaporIndividu(e) {
+//   e.preventDefault();
+//   const tgl = document.getElementById('tglLaporan').value || new Date().toISOString().split('T')[0];
+//   const kls = document.getElementById('indKelas').value;
+//   const siswa = document.getElementById('indSiswa').value;
+//   const pel = document.getElementById('indPelanggaran').value;
+//   const ket = document.getElementById('indKet').value;
 
-  const lap = {
-    id: Date.now(),
-    tanggal: tgl,
-    pelapor: currentUser.nama,
-    tipe: 'Individu',
-    pelanggaran: pel,
-    siswa: [{ nama: siswa, kelas: kls, ket }]
-  };
+//   const lap = {
+//     id: Date.now(),
+//     tanggal: tgl,
+//     pelapor: currentUser.nama,
+//     tipe: 'Individu',
+//     pelanggaran: pel,
+//     siswa: [{ nama: siswa, kelas: kls, ket }]
+//   };
 
-  listLaporan.push(lap);
-  saveData();
-  alert('Laporan Individu berhasil dikirim!');
-  document.getElementById('formIndividu').reset();
-  document.getElementById('indSiswa').disabled = true;
-}
+//   listLaporan.push(lap);
+//   saveData();
+//   alert('Laporan Individu berhasil dikirim!');
+//   document.getElementById('formIndividu').reset();
+//   document.getElementById('indSiswa').disabled = true;
+// }
 
-function simpanLaporKolektif(e) {
-  e.preventDefault();
-  const tgl = document.getElementById('tglLaporan').value || new Date().toISOString().split('T')[0];
-  const pel = document.getElementById('kolPelanggaran').value;
+// function simpanLaporKolektif(e) {
+//   e.preventDefault();
+//   const tgl = document.getElementById('tglLaporan').value || new Date().toISOString().split('T')[0];
+//   const pel = document.getElementById('kolPelanggaran').value;
+
+//   if (selectedKolektifSiswa.length === 0) {
+//     alert('Tambahkan minimal 1 siswa!');
+//     return;
+//   }
+
+//   const lap = {
+//     id: Date.now(),
+//     tanggal: tgl,
+//     pelapor: currentUser.nama,
+//     tipe: 'Kolektif',
+//     pelanggaran: pel,
+//     siswa: [...selectedKolektifSiswa]
+//   };
+
+//   listLaporan.push(lap);
+//   saveData();
+//   alert('Laporan Kolektif berhasil dikirim!');
+//   selectedKolektifSiswa = [];
+//   renderSelectedKolektif();
+//   document.getElementById('formKolektif').reset();
+// }
+
+// SIMPAN LAPORAN KOLEKTIF KE SUPABASE
+async function simpanLaporKolektif(e) {
+  if (e) e.preventDefault();
 
   if (selectedKolektifSiswa.length === 0) {
-    alert('Tambahkan minimal 1 siswa!');
+    alert('Harap pilih minimal 1 siswa!');
     return;
   }
 
-  const lap = {
-    id: Date.now(),
+  const tgl = document.getElementById('tglLaporan').value || new Date().toISOString().split('T')[0];
+  const pel = document.getElementById('kolPelanggaran').value;
+
+  const lapObj = {
     tanggal: tgl,
-    pelapor: currentUser.nama,
+    pelapor: currentUser ? currentUser.nama : 'Guru Pelapor',
     tipe: 'Kolektif',
     pelanggaran: pel,
-    siswa: [...selectedKolektifSiswa]
+    siswa: selectedKolektifSiswa // Array objek [{nama, kelas, ket}]
   };
 
-  listLaporan.push(lap);
-  saveData();
-  alert('Laporan Kolektif berhasil dikirim!');
-  selectedKolektifSiswa = [];
-  renderSelectedKolektif();
-  document.getElementById('formKolektif').reset();
+  // Simpan ke Supabase
+  const ok = await saveDataToSupabase(lapObj);
+
+  if (ok) {
+    // Reset daftar siswa kolektif setelah berhasil
+    selectedKolektifSiswa = [];
+    renderSelectedKolektif();
+    const formKol = document.getElementById('formKolektif');
+    if (formKol) formKol.reset();
+  }
 }
 
 
