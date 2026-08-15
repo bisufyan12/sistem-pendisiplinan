@@ -63,11 +63,11 @@ async function fetchLaporanFromSupabase() {
 
   if (data) {
     listLaporan = data;
-    if (!document.getElementById('sectionRekap').classList.contains('hidden')) renderRekapSiswa();
-    if (!document.getElementById('sectionDashboard').classList.contains('hidden')) renderDashboardTable();
+    // Panggil render langsung untuk memperbarui data di memori UI
+    if (typeof renderDashboardTable === 'function') renderDashboardTable();
+    if (typeof renderRekapSiswa === 'function') renderRekapSiswa();
   }
 }
-
 // // ==========================================
 // // AMBIL LAPORAN DARI SUPABASE
 // // ==========================================
@@ -2004,81 +2004,50 @@ async function hapusLaporan(id) {
 }
 
 // REKAPITULASI SISWA
-function renderRekapSiswa() {
-  const q = document.getElementById('searchSiswaRekap').value.toLowerCase();
-  const today = new Date().toISOString().split('T')[0];
-  let cntHari = 0;
-  let cntSiswaMap = {};
-  let selectedSiswaPanggilan = null;
-
-  listLaporan.forEach(l => {
-    if (l.tanggal === today) cntHari++;
-    l.siswa.forEach(s => {
-      const key = `${s.nama} (${s.kelas})`;
-      if (!cntSiswaMap[key]) {
-        cntSiswaMap[key] = { 
-          nama: s.nama, 
-          kelas: s.kelas, 
-          total: 0, 
-          detailCounts: {} 
-        };
-      }
-      cntSiswaMap[key].total += 1;
-      
-      const p = l.pelanggaran;
-      cntSiswaMap[key].detailCounts[p] = (cntSiswaMap[key].detailCounts[p] || 0) + 1;
-    });
-  });
-
-  document.getElementById('statHariIni').innerText = cntHari;
-  document.getElementById('statMingguIni').innerText = listLaporan.length;
-  document.getElementById('statBulanIni').innerText = listLaporan.length;
-  document.getElementById('statTotalSiswaUnik').innerText = Object.keys(cntSiswaMap).length;
-
-  let arrRekap = Object.values(cntSiswaMap).sort((a,b) => b.total - a.total);
-  if (q) {
-    arrRekap = arrRekap.filter(item => item.nama.toLowerCase().includes(q) || item.kelas.toLowerCase().includes(q));
+// Helper Global untuk membaca data siswa dari Supabase (JSON / Array / String)
+function getSiswaArray(siswaData) {
+  if (!siswaData) return [];
+  if (Array.isArray(siswaData)) return siswaData;
+  if (typeof siswaData === 'string') {
+    try {
+      const parsed = JSON.parse(siswaData);
+      return Array.isArray(parsed) ? parsed : [{ nama: siswaData, kelas: '-', ket: '' }];
+    } catch (e) {
+      return [{ nama: siswaData, kelas: '-', ket: '' }];
+    }
   }
+  return [];
+}
 
-  const tbody = document.getElementById('rekapSiswaBody');
-  if (arrRekap.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-xs text-slate-400">Belum ada data rekapan.</td></tr>';
+// PERBAIKAN RENDER REKAP SISWA
+function renderRekapSiswa() {
+  const container = document.getElementById('rekapSiswaContainer'); // Sesuaikan ID container/tabel rekap Anda
+  if (!container) return;
+
+  if (listLaporan.length === 0) {
+    container.innerHTML = '<p class="text-center text-xs text-slate-400 p-4">Belum ada data rekap.</p>';
     return;
   }
 
-  // Gantikan bagian render tabel di fungsi renderRekapSiswa() dengan ini:
-    tbody.innerHTML = arrRekap.map((item, idx) => {
-      const rincianHTML = Object.entries(item.detailCounts)
-        .map(([jenis, jml]) => `
-          <div class="flex items-center justify-between text-xs py-1 border-b border-slate-100 last:border-none">
-            <span class="text-slate-700">${jenis}</span>
-            <span class="ml-2 font-bold px-2 py-0.5 bg-amber-100 text-amber-800 rounded-md text-[11px] whitespace-nowrap">x${jml}</span>
-          </div>
-        `).join('');
+  container.innerHTML = listLaporan.map(l => {
+    const siswaArr = getSiswaArray(l.siswa);
+    const siswaText = siswaArr.length > 0
+      ? siswaArr.map(s => `<b>${s.nama} (${s.kelas || '-'})</b> ${s.ket ? ': ' + s.ket : ''}`).join(', ')
+      : '-';
 
-      return `
-        <tr class="hover:bg-slate-50 border-b border-slate-100">
-          <td class="p-3.5 text-center font-bold text-xs">${idx + 1}</td>
-          <td class="p-3.5 font-bold text-slate-800">${item.nama} <span class="text-xs font-normal text-slate-500 block">${item.kelas}</span></td>
-          <td class="p-3.5 text-xs text-slate-600 max-w-xs">${rincianHTML}</td>
-          <td class="p-3.5 text-center font-black text-rose-600 text-base">${item.total}</td>
-          <td class="p-3.5 text-center text-xs">
-            ${item.total >= 5 
-              ? '<span class="bg-rose-100 text-rose-700 font-bold px-2 py-1 rounded">Perlu Pembinaan</span>' 
-              : '<span class="bg-emerald-100 text-emerald-700 font-bold px-2 py-1 rounded">Pemantauan</span>'
-            }
-          </td>
-          <td class="p-3.5 text-center">
-            ${currentUser.isPembina 
-              ? `<button onclick="bukaModalPanggilan('${item.nama}', '${item.kelas}', ${item.total})" class="bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold text-xs px-3 py-1.5 rounded-lg transition">Panggil</button>`
-              : `<span class="text-xs text-slate-400 font-semibold italic">Read-Only</span>`
-            }
-          </td>
-        </tr>
-      `;
-    }).join('');
+    return `
+      <div class="p-3 bg-white rounded-lg shadow-sm border border-slate-100 mb-2">
+        <div class="flex justify-between text-xs font-semibold text-slate-600 mb-1">
+          <span>${l.tanggal || '-'}</span>
+          <span class="px-2 py-0.5 rounded text-[10px] ${l.tipe === 'Individu' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${l.tipe || 'Individu'}</span>
+        </div>
+        <p class="text-xs text-slate-800"><strong>Pelanggaran:</strong> ${l.pelanggaran || '-'}</p>
+        <p class="text-xs text-slate-700 mt-1"><strong>Siswa:</strong> ${siswaText}</p>
+        <p class="text-[11px] text-slate-400 mt-1">Pelapor: ${l.pelapor || '-'}</p>
+      </div>
+    `;
+  }).join('');
 }
-
 // DASHBOARD ADMIN / VALIDASI (Validasi/Hapus Hanya untuk isPembina: true)
 function renderDashboardTable() {
   const tipe = document.getElementById('filterTipe').value;
