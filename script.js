@@ -5,6 +5,7 @@ const SUPABASE_URL = 'https://cymgrwdjhsrgmhgkaraj.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN5bWdyd2RqaHNyZ21oZ2thcmFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY1MjM2NzMsImV4cCI6MjEwMjA5OTY3M30.3D6orIlB6ISe9e000b-cgcmZcQxOG_O3jX3WSmDnT28';
 
 let dbClient = null;
+let selectedSiswaPanggilan = null;
 
 function getSupabase() {
   if (!dbClient) {
@@ -2120,12 +2121,18 @@ function renderRekapSiswa() {
     let statusBK = '<span class="px-2 py-0.5 rounded-full text-[10px] bg-slate-100 text-slate-600 font-semibold">Teguran Lisan</span>';
     let aksiPanggilan = '<span class="text-xs text-slate-400 font-semibold italic">-</span>';
 
-    if (s.total >= 3) {
-      statusBK = '<span class="px-2 py-0.5 rounded-full text-[10px] bg-rose-100 text-rose-700 font-bold">SP 1 / Panggilan</span>';
-      aksiPanggilan = `<button onclick="alert('Panggilan Orang Tua untuk ${s.nama}')" class="px-2 py-1 bg-rose-600 text-white text-[11px] font-bold rounded-lg hover:bg-rose-700 shadow-sm">Panggil Ortu</button>`;
-    } else if (s.total === 2) {
-      statusBK = '<span class="px-2 py-0.5 rounded-full text-[10px] bg-amber-100 text-amber-700 font-bold">Konseling BK</span>';
-    }
+    // Di dalam fungsi renderRekapSiswa()
+
+  if (s.total >= 3) {
+    statusBK = '<span class="px-2 py-0.5 rounded-full text-[10px] bg-rose-100 text-rose-700 font-bold">SP 1 / Panggilan</span>';
+    
+    // Escape tanda petik agar nama/kelas yang mengandung karakter khusus tidak merusak sintaks JS
+    const namaClean = s.nama.replace(/'/g, "\\'");
+    const kelasClean = s.kelas.replace(/'/g, "\\'");
+    
+    // HUBUNGKAN KE FUNGSI bukaModalPanggilan
+    aksiPanggilan = `<button onclick="bukaModalPanggilan('${namaClean}', '${kelasClean}', ${s.total})" class="px-2.5 py-1 bg-rose-600 text-white text-[11px] font-bold rounded-lg hover:bg-rose-700 shadow-sm transition">Panggil Ortu</button>`;
+  }
 
     return `
       <tr class="hover:bg-slate-50 border-b border-slate-100">
@@ -2218,11 +2225,13 @@ function bukaModalPanggilan(nama, kelas, total) {
   document.getElementById('modalTotalPelanggaran').innerText = `Total Pelanggaran: ${total} Kasus`;
   
   // Set default waktu esok hari jam 08:00
+  // Set default esok hari jam 08:00 WIB
   const besok = new Date();
   besok.setDate(besok.getDate() + 1);
-  besok.setHours(8, 0, 0, 0);
-  document.getElementById('panggilanWaktu').value = besok.toISOString().slice(0, 16);
-
+  const yyyy = besok.getFullYear();
+  const mm = String(besok.getMonth() + 1).padStart(2, '0');
+  const dd = String(besok.getDate()).padStart(2, '0');
+  document.getElementById('panggilanWaktu').value = `${yyyy}-${mm}-${dd}T08:00`;
   document.getElementById('modalPanggilan').classList.remove('hidden');
 }
 
