@@ -2023,6 +2023,7 @@ function getSiswaArray(siswaData) {
 }
 
 function renderRekapSiswa() {
+  // Targetkan tbody tabel rekap, bukan kontainer utama sectionRekap
   const tbody = document.getElementById('rekapSiswaBody');
   if (!tbody) return;
 
@@ -2031,9 +2032,8 @@ function renderRekapSiswa() {
   // 1. HITUNG STATISTIK (Hari Ini, Minggu Ini, Bulan Ini)
   const now = new Date();
   const todayStr = now.toISOString().split('T')[0];
-  const currentMonthStr = todayStr.substring(0, 7); // Format YYYY-MM
+  const currentMonthStr = todayStr.substring(0, 7);
   
-  // Batas awal minggu ini (7 hari terakhir)
   const startOfWeek = new Date(now);
   startOfWeek.setDate(now.getDate() - 6);
 
@@ -2041,13 +2041,12 @@ function renderRekapSiswa() {
   let countMingguIni = 0;
   let countBulanIni = 0;
 
-  // Object Agregasi Per Siswa: { "NAMA_KELAS": { nama, kelas, total, rincian: [] } }
+  // Objek Rekapitulasi Per Siswa
   const rekapSiswaMap = {};
 
   listLaporan.forEach(l => {
     const tgl = l.tanggal || '';
 
-    // Hitung Statistik Waktu Laporan
     if (tgl === todayStr) countHariIni++;
     if (tgl.startsWith(currentMonthStr)) countBulanIni++;
     if (tgl) {
@@ -2055,7 +2054,6 @@ function renderRekapSiswa() {
       if (lDate >= startOfWeek && lDate <= now) countMingguIni++;
     }
 
-    // Kelompokkan Pelanggaran per Siswa
     const siswaArr = getSiswaArray(l.siswa);
     siswaArr.forEach(s => {
       if (!s.nama) return;
@@ -2079,7 +2077,7 @@ function renderRekapSiswa() {
     });
   });
 
-  // Perbarui Angka di Kartu Statistik
+  // Perbarui Kartu Statistik Atas
   if (document.getElementById('statHariIni')) document.getElementById('statHariIni').innerText = countHariIni;
   if (document.getElementById('statMingguIni')) document.getElementById('statMingguIni').innerText = countMingguIni;
   if (document.getElementById('statBulanIni')) document.getElementById('statBulanIni').innerText = countBulanIni;
@@ -2087,7 +2085,7 @@ function renderRekapSiswa() {
   let listRekap = Object.values(rekapSiswaMap);
   if (document.getElementById('statTotalSiswaUnik')) document.getElementById('statTotalSiswaUnik').innerText = listRekap.length;
 
-  // 2. FILTER SEARCH PENCARIAN
+  // 2. FILTER PENCARIAN
   if (searchKw) {
     listRekap = listRekap.filter(s => 
       s.nama.toLowerCase().includes(searchKw) || 
@@ -2098,7 +2096,7 @@ function renderRekapSiswa() {
   // 3. URUTKAN TERBANYAK (RANKING)
   listRekap.sort((a, b) => b.total - a.total);
 
-  // 4. RENDER BARIS TABEL (TBODY)
+  // 4. RENDER KE TBODY TABEL
   if (listRekap.length === 0) {
     tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-xs text-slate-400">Tidak ada data siswa ditemukan.</td></tr>';
     return;
@@ -2111,7 +2109,6 @@ function renderRekapSiswa() {
       </div>`
     ).join('');
 
-    // Rekomendasi status BP/BK berdasarkan akumulasi poin/total
     let statusBK = '<span class="px-2 py-0.5 rounded-full text-[10px] bg-slate-100 text-slate-600 font-semibold">Teguran Lisan</span>';
     let aksiPanggilan = '<span class="text-xs text-slate-400 font-semibold italic">-</span>';
 
@@ -2134,6 +2131,7 @@ function renderRekapSiswa() {
     `;
   }).join('');
 }
+
 
 // DASHBOARD ADMIN / VALIDASI (Validasi/Hapus Hanya untuk isPembina: true)
 function renderDashboardTable() {
