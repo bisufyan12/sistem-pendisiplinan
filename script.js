@@ -2022,35 +2022,119 @@ function getSiswaArray(siswaData) {
   return [];
 }
 
-// PERBAIKAN RENDER REKAP SISWA
 function renderRekapSiswa() {
-  const container = document.getElementById('sectionRekap'); // Sesuaikan ID container/tabel rekap Anda
-  if (!container) return;
+  const tbody = document.getElementById('rekapSiswaBody');
+  if (!tbody) return;
 
-  if (listLaporan.length === 0) {
-    container.innerHTML = '<p class="text-center text-xs text-slate-400 p-4">Belum ada data rekap.</p>';
+  const searchKw = (document.getElementById('searchSiswaRekap')?.value || '').toLowerCase();
+
+  // 1. HITUNG STATISTIK (Hari Ini, Minggu Ini, Bulan Ini)
+  const now = new Date();
+  const todayStr = now.toISOString().split('T')[0];
+  const currentMonthStr = todayStr.substring(0, 7); // Format YYYY-MM
+  
+  // Batas awal minggu ini (7 hari terakhir)
+  const startOfWeek = new Date(now);
+  startOfWeek.setDate(now.getDate() - 6);
+
+  let countHariIni = 0;
+  let countMingguIni = 0;
+  let countBulanIni = 0;
+
+  // Object Agregasi Per Siswa: { "NAMA_KELAS": { nama, kelas, total, rincian: [] } }
+  const rekapSiswaMap = {};
+
+  listLaporan.forEach(l => {
+    const tgl = l.tanggal || '';
+
+    // Hitung Statistik Waktu Laporan
+    if (tgl === todayStr) countHariIni++;
+    if (tgl.startsWith(currentMonthStr)) countBulanIni++;
+    if (tgl) {
+      const lDate = new Date(tgl);
+      if (lDate >= startOfWeek && lDate <= now) countMingguIni++;
+    }
+
+    // Kelompokkan Pelanggaran per Siswa
+    const siswaArr = getSiswaArray(l.siswa);
+    siswaArr.forEach(s => {
+      if (!s.nama) return;
+      const key = `${s.nama.trim().toUpperCase()}_${(s.kelas || '-').trim().toUpperCase()}`;
+
+      if (!rekapSiswaMap[key]) {
+        rekapSiswaMap[key] = {
+          nama: s.nama,
+          kelas: s.kelas || '-',
+          total: 0,
+          rincian: []
+        };
+      }
+
+      rekapSiswaMap[key].total += 1;
+      rekapSiswaMap[key].rincian.push({
+        tanggal: l.tanggal,
+        pelanggaran: l.pelanggaran,
+        ket: s.ket
+      });
+    });
+  });
+
+  // Perbarui Angka di Kartu Statistik
+  if (document.getElementById('statHariIni')) document.getElementById('statHariIni').innerText = countHariIni;
+  if (document.getElementById('statMingguIni')) document.getElementById('statMingguIni').innerText = countMingguIni;
+  if (document.getElementById('statBulanIni')) document.getElementById('statBulanIni').innerText = countBulanIni;
+
+  let listRekap = Object.values(rekapSiswaMap);
+  if (document.getElementById('statTotalSiswaUnik')) document.getElementById('statTotalSiswaUnik').innerText = listRekap.length;
+
+  // 2. FILTER SEARCH PENCARIAN
+  if (searchKw) {
+    listRekap = listRekap.filter(s => 
+      s.nama.toLowerCase().includes(searchKw) || 
+      s.kelas.toLowerCase().includes(searchKw)
+    );
+  }
+
+  // 3. URUTKAN TERBANYAK (RANKING)
+  listRekap.sort((a, b) => b.total - a.total);
+
+  // 4. RENDER BARIS TABEL (TBODY)
+  if (listRekap.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-xs text-slate-400">Tidak ada data siswa ditemukan.</td></tr>';
     return;
   }
 
-  container.innerHTML = listLaporan.map(l => {
-    const siswaArr = getSiswaArray(l.siswa);
-    const siswaText = siswaArr.length > 0
-      ? siswaArr.map(s => `<b>${s.nama} (${s.kelas || '-'})</b> ${s.ket ? ': ' + s.ket : ''}`).join(', ')
-      : '-';
+  tbody.innerHTML = listRekap.map((s, idx) => {
+    const rincianHtml = s.rincian.map(r => 
+      `<div class="text-[11px] py-0.5 border-b border-slate-50 last:border-none">
+        <span class="font-semibold text-slate-700">${r.tanggal || '-'}:</span> ${r.pelanggaran || '-'} ${r.ket ? `<i class="text-slate-400">(${r.ket})</i>` : ''}
+      </div>`
+    ).join('');
+
+    // Rekomendasi status BP/BK berdasarkan akumulasi poin/total
+    let statusBK = '<span class="px-2 py-0.5 rounded-full text-[10px] bg-slate-100 text-slate-600 font-semibold">Teguran Lisan</span>';
+    let aksiPanggilan = '<span class="text-xs text-slate-400 font-semibold italic">-</span>';
+
+    if (s.total >= 3) {
+      statusBK = '<span class="px-2 py-0.5 rounded-full text-[10px] bg-rose-100 text-rose-700 font-bold">SP 1 / Panggilan</span>';
+      aksiPanggilan = `<button onclick="alert('Panggilan Orang Tua untuk ${s.nama}')" class="px-2 py-1 bg-rose-600 text-white text-[11px] font-bold rounded-lg hover:bg-rose-700 shadow-sm">Panggil Ortu</button>`;
+    } else if (s.total === 2) {
+      statusBK = '<span class="px-2 py-0.5 rounded-full text-[10px] bg-amber-100 text-amber-700 font-bold">Konseling BK</span>';
+    }
 
     return `
-      <div class="p-3 bg-white rounded-lg shadow-sm border border-slate-100 mb-2">
-        <div class="flex justify-between text-xs font-semibold text-slate-600 mb-1">
-          <span>${l.tanggal || '-'}</span>
-          <span class="px-2 py-0.5 rounded text-[10px] ${l.tipe === 'Individu' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${l.tipe || 'Individu'}</span>
-        </div>
-        <p class="text-xs text-slate-800"><strong>Pelanggaran:</strong> ${l.pelanggaran || '-'}</p>
-        <p class="text-xs text-slate-700 mt-1"><strong>Siswa:</strong> ${siswaText}</p>
-        <p class="text-[11px] text-slate-400 mt-1">Pelapor: ${l.pelapor || '-'}</p>
-      </div>
+      <tr class="hover:bg-slate-50 border-b border-slate-100">
+        <td class="p-3.5 text-center font-bold text-slate-500 text-xs">${idx + 1}</td>
+        <td class="p-3.5 font-bold text-slate-800 text-xs">${s.nama} <span class="text-slate-400 font-medium">(${s.kelas})</span></td>
+        <td class="p-3.5">${rincianHtml}</td>
+        <td class="p-3.5 text-center font-black text-rose-600 text-sm">${s.total}</td>
+        <td class="p-3.5 text-center">${statusBK}</td>
+        <td class="p-3.5 text-center">${aksiPanggilan}</td>
+      </tr>
     `;
   }).join('');
 }
+
 // DASHBOARD ADMIN / VALIDASI (Validasi/Hapus Hanya untuk isPembina: true)
 function renderDashboardTable() {
   const tipe = document.getElementById('filterTipe').value;
