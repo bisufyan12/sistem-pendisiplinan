@@ -2029,7 +2029,6 @@ function getSiswaArray(siswaData) {
 }
 
 function renderRekapSiswa() {
-  // Targetkan tbody tabel rekap, bukan kontainer utama sectionRekap
   const tbody = document.getElementById('rekapSiswaBody');
   if (!tbody) return;
 
@@ -2070,16 +2069,18 @@ function renderRekapSiswa() {
           nama: s.nama,
           kelas: s.kelas || '-',
           total: 0,
-          rincian: []
+          pelanggaranCounts: {} // Menampung jumlah per jenis pelanggaran
         };
       }
 
       rekapSiswaMap[key].total += 1;
-      rekapSiswaMap[key].rincian.push({
-        tanggal: l.tanggal,
-        pelanggaran: l.pelanggaran,
-        ket: s.ket
-      });
+
+      // Hitung frekuensi jenis pelanggaran
+      const namaPelanggaran = l.pelanggaran || 'Pelanggaran Lainnya';
+      if (!rekapSiswaMap[key].pelanggaranCounts[namaPelanggaran]) {
+        rekapSiswaMap[key].pelanggaranCounts[namaPelanggaran] = 0;
+      }
+      rekapSiswaMap[key].pelanggaranCounts[namaPelanggaran] += 1;
     });
   });
 
@@ -2109,9 +2110,10 @@ function renderRekapSiswa() {
   }
 
   tbody.innerHTML = listRekap.map((s, idx) => {
-    const rincianHtml = s.rincian.map(r => 
-      `<div class="text-[11px] py-0.5 border-b border-slate-50 last:border-none">
-        <span class="font-semibold text-slate-700">${r.tanggal || '-'}:</span> ${r.pelanggaran || '-'} ${r.ket ? `<i class="text-slate-400">(${r.ket})</i>` : ''}
+    // Format Rincian: "Terlambat Masuk Sekolah (x2)"
+    const rincianHtml = Object.entries(s.pelanggaranCounts).map(([kategori, jumlah]) => 
+      `<div class="text-xs font-medium text-slate-700 py-0.5">
+        ${kategori} <span class="text-xs font-bold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">(x${jumlah})</span>
       </div>`
     ).join('');
 
