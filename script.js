@@ -1701,6 +1701,21 @@ function handleLogin(e) {
   }
 
   showSection('form');
+
+  async function handleLogin() {
+  // ... kode verifikasi login Anda ...
+
+  if (loginBerhasil) {
+    currentUser = user; // Simpan data user
+    
+    // TARIK DATA DARI SUPABASE BEGITU MASUK AKUN
+    await fetchLaporanFromSupabase();
+
+    // Tampilkan dashboard / ganti tampilan
+    showSection('sectionDashboard');
+  }
+}
+
 }
 
 //LOGOUT
@@ -1966,7 +1981,7 @@ async function simpanLaporIndividu(e) {
 
   const ok = await saveDataToSupabase(lap);
   if (ok) {
-    alert('Laporan Individu berhasil tersimpan di Supabase!');
+    // alert('Laporan Individu berhasil tersimpan di Supabase!');
     document.getElementById('formIndividu').reset();
     document.getElementById('indSiswa').disabled = true;
   }
@@ -2312,3 +2327,9 @@ function exportToCSV() {
   link.click();
   document.body.removeChild(link);
 }
+
+// Jalankan otomatis begitu seluruh file HTML & JS selesai dimuat browser
+document.addEventListener('DOMContentLoaded', async () => {
+  await fetchLaporanFromSupabase();
+});
+
