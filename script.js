@@ -1626,16 +1626,7 @@ const DATA_SISWA = [
 // STATE APLIKASI
 let currentUser = null;
 let selectedKolektifSiswa = [];
-let listLaporan = JSON.parse(localStorage.getItem('sips_laporan_data')) || [
-  {
-    id: 1,
-    tanggal: new Date().toISOString().split('T')[0],
-    pelapor: 'ROBBY SOPYAN, S.Pd',
-    tipe: 'Individu',
-    pelanggaran: 'Terlambat Masuk Sekolah',
-    siswa: [{ nama: 'ABDUL RIZIQ', kelas: 'X.1', ket: 'Terlambat 20 menit' }]
-  }
-];
+let listLaporan = JSON.parse(localStorage.getItem('sips_laporan_data'));
 
 // INISIALISASI
 window.addEventListener('DOMContentLoaded', () => {
