@@ -2252,24 +2252,28 @@ function prosesCetakPanggilan() {
     return;
   }
 
-  // Buka jendela baru untuk tampilan Cetak Surat Panggilan
-  const printWindow = window.open('', '_blank');
-  printWindow.document.write(`
-    <!DOCTYPE html>
-    <html>
+  const dateObj = new Date(waktu);
+  const tglFormatted = dateObj.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  const jamFormatted = dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+  // 1. DRAFT KONTEN DOKUMEN WORD (DENGAN KOP & STRUKTUR SURAT)
+  const contentHtml = `
+    <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
     <head>
-      <title>Surat Panggilan Orang Tua - ${selectedSiswaPanggilan.nama}</title>
+      <meta charset='utf-8'>
+      <title>Surat Panggilan Orang Tua</title>
       <style>
-        body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; color: #333; }
-        .header { text-align: center; border-bottom: 3px double #000; padding-bottom: 10px; margin-bottom: 20px; }
-        .header h2 { margin: 0; font-size: 18px; }
-        .header h3 { margin: 5px 0 0 0; font-size: 16px; font-weight: normal; }
-        .header p { margin: 0; font-size: 12px; }
-        .title { text-align: center; font-weight: bold; text-decoration: underline; margin-top: 20px; font-size: 14px; }
-        .content { margin-top: 20px; font-size: 13px; }
-        .table-info { margin: 15px 0 15px 20px; border-collapse: collapse; }
-        .table-info td { padding: 4px 8px; }
-        .footer { margin-top: 50px; float: right; text-align: center; width: 200px; font-size: 13px; }
+        body { font-family: 'Calibri', 'Arial', sans-serif; font-size: 11pt; line-height: 1.5; margin: 2cm; }
+        .header { text-align: center; border-bottom: 3px double #000; padding-bottom: 8px; margin-bottom: 15px; }
+        .header h2 { margin: 0; font-size: 14pt; font-weight: bold; }
+        .header h3 { margin: 2px 0; font-size: 12pt; font-weight: normal; }
+        .header p { margin: 0; font-size: 9pt; font-style: italic; }
+        .title { text-align: center; font-weight: bold; text-decoration: underline; margin-top: 15px; font-size: 12pt; }
+        .nomor { text-align: center; font-size: 10pt; margin-bottom: 15px; }
+        .table-info { margin: 10px 0 10px 15px; border-collapse: collapse; }
+        .table-info td { padding: 3px 6px; vertical-align: top; font-size: 11pt; }
+        .footer-table { width: 100%; margin-top: 40px; border-collapse: collapse; }
+        .footer-table td { text-align: center; vertical-align: top; font-size: 11pt; }
       </style>
     </head>
     <body>
@@ -2281,44 +2285,79 @@ function prosesCetakPanggilan() {
       </div>
 
       <div class="title">SURAT PANGGILAN ORANG TUA / WALI SISWA</div>
-      <p style="text-align: center; font-size: 11px; margin-top: 2px;">Nomor: 422 / BP-BK / ${new Date().getFullYear()}</p>
+      <div class="nomor">Nomor: 422 / BP-BK / ${new Date().getFullYear()}</div>
 
-      <div class="content">
-        <p>Kepada Yth.<br>Orang Tua / Wali dari Siswa:</p>
-        
-        <table class="table-info">
-          <tr><td><b>Nama Siswa</b></td><td>: ${selectedSiswaPanggilan.nama}</td></tr>
-          <tr><td><b>Kelas</b></td><td>: ${selectedSiswaPanggilan.kelas}</td></tr>
-          <tr><td><b>Akumulasi Pelanggaran</b></td><td>: ${selectedSiswaPanggilan.total} Kali Pelanggaran</td></tr>
-        </table>
+      <p>Kepada Yth.<br><b>Orang Tua / Wali Siswa</b><br>di Tempat</p>
+      
+      <p>Dengan hormat,</p>
+      <p>Sehubungan dengan perlunya pembinaan dan evaluasi kedisiplinan siswa di sekolah, kami mengharapkan kehadiran Bapak/Ibu Orang Tua/Wali dari:</p>
 
-        <p>Sehubungan dengan perlunya pembinaan dan evaluasi kedisiplinan siswa di sekolah, kami mengharapkan kehadiran Bapak/Ibu Orang Tua/Wali pada:</p>
+      <table class="table-info">
+        <tr><td width="160"><b>Nama Siswa</b></td><td width="15">:</td><td><b>${selectedSiswaPanggilan.nama}</b></td></tr>
+        <tr><td><b>Kelas</b></td><td>:</td><td>${selectedSiswaPanggilan.kelas}</td></tr>
+        <tr><td><b>Akumulasi Pelanggaran</b></td><td>:</td><td>${selectedSiswaPanggilan.total} Kasus Pelanggaran</td></tr>
+      </table>
 
-        <table class="table-info">
-          <tr><td><b>Hari / Tanggal</b></td><td>: ${new Date(waktu).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</td></tr>
-          <tr><td><b>Waktu</b></td><td>: Pukul ${new Date(waktu).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB</td></tr>
-          <tr><td><b>Tempat</b></td><td>: ${ruang}</td></tr>
-          <tr><td><b>Keperluan</b></td><td>: Pembinaan & Koordinasi Kedisiplinan Siswa</td></tr>
-        </table>
+      <p>Untuk hadir menemui Tim Ketertiban / Wali Kelas pada:</p>
 
-        ${catatan ? `<p><b>Catatan Khusus:</b> ${catatan}</p>` : ''}
+      <table class="table-info">
+        <tr><td width="160"><b>Hari / Tanggal</b></td><td width="15">:</td><td>${tglFormatted}</td></tr>
+        <tr><td><b>Waktu</b></td><td>:</td><td>Pukul ${jamFormatted} WIB</td></tr>
+        <tr><td><b>Tempat</b></td><td>:</td><td>${ruang}</td></tr>
+        <tr><td><b>Keperluan</b></td><td>:</td><td>Pembinaan & Koordinasi Kedisiplinan Siswa</td></tr>
+      </table>
 
-        <p>Demikian surat panggilan ini kami sampaikan. Atas perhatian dan kerja sama Bapak/Ibu, kami ucapkan terima kasih.</p>
-      </div>
+      ${catatan ? `<p><b>Catatan Khusus:</b><br><i>${catatan}</i></p>` : ''}
 
-      <div class="footer">
-        <p>Karawang, ${new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}<br>Guru Pembina / BP-BK,</p>
-        <br><br><br>
-        <p><b><u>${currentUser.nama}</u></b><br>NIP. ${currentUser.nip || '-'}</p>
-      </div>
+      <p>Demikian surat panggilan ini kami sampaikan. Atas perhatian dan kerja sama Bapak/Ibu, kami ucapkan terima kasih.</p>
 
-      <script>
-        window.onload = function() { window.print(); }
-      </script>
+      <table class="footer-table">
+        <tr>
+          <td width="50%">
+            <br>Mengetahui,<br><b>Koordinator BP/BK</b>
+            <br><br><br><br>
+            ( ........................................... )
+          </td>
+          <td width="50%">
+            Karawang, ${new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}<br>
+            <b>Guru Pembina / Wali Kelas</b>
+            <br><br><br><br>
+            <b><u>${currentUser?.nama || 'Robby Sopyan, S.Pd'}</u></b><br>
+            NIP. ${currentUser?.nip || '-'}
+          </td>
+        </tr>
+      </table>
     </body>
     </html>
-  `);
-  printWindow.document.close();
+  `;
+
+  // 2. CONVERT HTML KE FILE WORD (.doc)
+  const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' "+
+        "xmlns:w='urn:schemas-microsoft-com:office:word' "+
+        "xmlns='http://www.w3.org/TR/REC-html40'>"+
+        "<head><meta charset='utf-8'></head><body>";
+  const footer = "</body></html>";
+  const sourceHTML = header + contentHtml + footer;
+
+  const blob = new Blob(['\ufeff' + sourceHTML], {
+    type: 'application/msword'
+  });
+
+  // 3. UNDERSTREAM DOWNLOAD OTOMATIS
+  const namaFile = `Surat_Panggilan_${selectedSiswaPanggilan.nama.replace(/\s+/g, '_')}_${selectedSiswaPanggilan.kelas}.doc`;
+  
+  const downloadLink = document.createElement("a");
+  document.body.appendChild(downloadLink);
+
+  if (navigator.msSaveOrOpenBlob) {
+    navigator.msSaveOrOpenBlob(blob, namaFile);
+  } else {
+    downloadLink.href = URL.createObjectURL(blob);
+    downloadLink.download = namaFile;
+    downloadLink.click();
+  }
+  
+  document.body.removeChild(downloadLink);
   closeModalPanggilan();
 }
 
