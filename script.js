@@ -1731,7 +1731,7 @@ async function handleLogin(e) {
   } else {
     showSection('form');      // Buka Form Laporan jika Guru Biasa / Siswa
   }
-
+}
 
 //LOGOUT
 function handleLogout() {
