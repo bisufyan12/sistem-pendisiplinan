@@ -2137,8 +2137,8 @@ function renderRekapSiswa() {
 
     // Di dalam fungsi renderRekapSiswa()
 
-    if (s.total >= 3) {
-      statusBK = '<span class="px-2 py-0.5 rounded-full text-[10px] bg-rose-100 text-rose-700 font-bold">SP 1 / Panggilan</span>';
+    if (s.total >= 5) {
+      statusBK = '<span class="px-2 py-0.5 rounded-full text-[10px] bg-rose-100 text-rose-700 font-bold">Pembinaan Khusus</span>';
 
       // HANYA Pembina / BP / BK yang dapat melihat dan mengklik tombol "Panggil Ortu"
       if (currentUser && currentUser.isPembina) {
@@ -2150,8 +2150,8 @@ function renderRekapSiswa() {
       }
     } 
     
-    else if (s.total === 2) {
-      statusBK = '<span class="px-2 py-0.5 rounded-full text-[10px] bg-amber-100 text-amber-700 font-bold">Konseling BK</span>';
+    else if (s.total === 3) {
+      statusBK = '<span class="px-2 py-0.5 rounded-full text-[10px] bg-amber-100 text-amber-700 font-bold">Pembinaan Wali Kelas</span>';
     }
 
     return `
@@ -2276,34 +2276,59 @@ function prosesCetakPanggilan() {
   const tglFormatted = dateObj.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
   const jamFormatted = dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
 
-  // 1. DRAFT KONTEN DOKUMEN WORD (DENGAN KOP & STRUKTUR SURAT)
+  // Tanggal Hari Ini untuk Titimangsa Surat
+  const titiMangsa = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+
+  // 1. DRAFT KONTEN DOKUMEN WORD (KOP RESMI & TITIMANGSA KEPALA SEKOLAH)
   const contentHtml = `
     <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
     <head>
       <meta charset='utf-8'>
       <title>Surat Panggilan Orang Tua</title>
       <style>
-        body { font-family: 'Calibri', 'Arial', sans-serif; font-size: 11pt; line-height: 1.5; margin: 2cm; }
-        .header { text-align: center; border-bottom: 3px double #000; padding-bottom: 8px; margin-bottom: 15px; }
-        .header h2 { margin: 0; font-size: 14pt; font-weight: bold; }
-        .header h3 { margin: 2px 0; font-size: 12pt; font-weight: normal; }
-        .header p { margin: 0; font-size: 9pt; font-style: italic; }
+        body { font-family: 'Times New Roman', Times, serif; font-size: 11pt; line-height: 1.5; margin: 1.5cm; }
+        
+        /* KOP SURAT */
+        .kop-table { width: 100%; border-bottom: 3px double #000; padding-bottom: 6px; margin-bottom: 15px; border-collapse: collapse; }
+        .kop-table td { vertical-align: middle; }
+        .kop-text { text-align: center; }
+        .kop-text .pemprov { font-size: 11pt; font-weight: bold; margin: 0; }
+        .kop-text .dinas { font-size: 14pt; font-weight: bold; margin: 0; }
+        .kop-text .cabdin { font-size: 11pt; font-weight: bold; margin: 0; }
+        .kop-text .sekolah { font-size: 15pt; font-weight: bold; margin: 0; }
+        .kop-text .alamat { font-size: 9pt; margin: 0; }
+        .kop-text .kontak { font-size: 9pt; margin: 0; }
+        
+        /* ISI SURAT */
         .title { text-align: center; font-weight: bold; text-decoration: underline; margin-top: 15px; font-size: 12pt; }
-        .nomor { text-align: center; font-size: 10pt; margin-bottom: 15px; }
+        .nomor { text-align: center; font-size: 10pt; margin-bottom: 20px; }
         .table-info { margin: 10px 0 10px 15px; border-collapse: collapse; }
         .table-info td { padding: 3px 6px; vertical-align: top; font-size: 11pt; }
+        
+        /* FOOTER / TANDA TANGAN */
         .footer-table { width: 100%; margin-top: 40px; border-collapse: collapse; }
-        .footer-table td { text-align: center; vertical-align: top; font-size: 11pt; }
+        .footer-table td { vertical-align: top; font-size: 11pt; padding: 0 10px; }
       </style>
     </head>
     <body>
-      <div class="header">
-        <h2>PEMERINTAH PROVINSI JAWA BARAT</h2>
-        <h2>DINAS PENDIDIKAN</h2>
-        <h3>SMAN 2 KARAWANG</h3>
-        <p>Jl. Lb. Baya No.1, Karawang Barat, Kab. Karawang, Jawa Barat</p>
-      </div>
+      <!-- KOP SURAT SESUAI GAMBAR -->
+      <table class="kop-table">
+        <tr>
+          <td width="15%" align="center">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Coat_of_arms_of_West_Java.svg/120px-Coat_of_arms_of_West_Java.svg.png" width="75" height="90" alt="Logo Jawa Barat">
+          </td>
+          <td width="85%" class="kop-text">
+            <div class="pemprov">PEMERINTAH DAERAH PROVINSI JAWA BARAT</div>
+            <div class="dinas">DINAS PENDIDIKAN</div>
+            <div class="cabdin">CABANG DINAS PENDIDIKAN WILAYAH IV</div>
+            <div class="sekolah">SMA NEGERI 2 KARAWANG</div>
+            <div class="alamat">JL Manunggal VII Palumbonsari Karawang Timur Kode Pos : 41351</div>
+            <div class="kontak">Email <a href="mailto:sman2krw@gmail.com">sman2krw@gmail.com</a> Website : sman2karawang.sch.id NSS : 301022105073</div>
+          </td>
+        </tr>
+      </table>
 
+      <!-- TITLE SURAT -->
       <div class="title">SURAT PANGGILAN ORANG TUA / WALI SISWA</div>
       <div class="nomor">Nomor: 422 / BP-BK / ${new Date().getFullYear()}</div>
 
@@ -2331,19 +2356,21 @@ function prosesCetakPanggilan() {
 
       <p>Demikian surat panggilan ini kami sampaikan. Atas perhatian dan kerja sama Bapak/Ibu, kami ucapkan terima kasih.</p>
 
+      <!-- TITIMANGSA & TANDA TANGAN SESUAI GAMBAR -->
       <table class="footer-table">
         <tr>
-          <td width="50%">
-            <br>Mengetahui,<br><b>Koordinator BP/BK</b>
-            <br><br><br><br>
-            ( ........................................... )
+          <td width="50%" align="left">
+            Wali Kelas
+            <br><br><br><br><br>
+            <b><u>${currentUser?.nama || '(Nama Wali Kelas siswa tsb)'}</u></b><br>
+            NIP. ${currentUser?.nip || '(NIP. Walas tsb)'}
           </td>
-          <td width="50%">
-            Karawang, ${new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}<br>
-            <b>Guru Pembina / Wali Kelas</b>
-            <br><br><br><br>
-            <b><u>${currentUser?.nama || 'Robby Sopyan, S.Pd'}</u></b><br>
-            NIP. ${currentUser?.nip || '-'}
+          <td width="50%" align="left">
+            Karawang, ${titiMangsa}<br>
+            Kepala Sekolah,
+            <br><br><br><br><br>
+            <b><u>Drs. H. Agus Setiawan, M.Pd</u></b><br>
+            NIP. 196809171992031007
           </td>
         </tr>
       </table>
@@ -2363,7 +2390,7 @@ function prosesCetakPanggilan() {
     type: 'application/msword'
   });
 
-  // 3. UNDERSTREAM DOWNLOAD OTOMATIS
+  // 3. UNDUH FILE OTOMATIS
   const namaFile = `Surat_Panggilan_${selectedSiswaPanggilan.nama.replace(/\s+/g, '_')}_${selectedSiswaPanggilan.kelas}.doc`;
   
   const downloadLink = document.createElement("a");
