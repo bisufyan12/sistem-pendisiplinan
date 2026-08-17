@@ -2132,12 +2132,12 @@ function renderRekapSiswa() {
       </div>`
     ).join('');
 
-    let statusBK = '<span class="px-2 py-0.5 rounded-full text-[10px] bg-slate-100 text-slate-600 font-semibold">Teguran Lisan</span>';
+    let statusBK = '<span class="px-2 py-0.5 rounded-full text-[10px] bg-slate-100 text-slate-600 font-semibold">Pemantauan</span>';
     let aksiPanggilan = '<span class="text-xs text-slate-400 font-semibold italic">-</span>';
 
     // Di dalam fungsi renderRekapSiswa()
 
-    if (s.total >= 5) {
+    if (s.total >= 6) {
       statusBK = '<span class="px-2 py-0.5 rounded-full text-[10px] bg-rose-100 text-rose-700 font-bold">Pembinaan Khusus</span>';
 
       // HANYA Pembina / BP / BK yang dapat melihat dan mengklik tombol "Panggil Ortu"
@@ -2150,7 +2150,7 @@ function renderRekapSiswa() {
       }
     } 
     
-    else if (s.total === 3) {
+    else if (s.total >= 3) {
       statusBK = '<span class="px-2 py-0.5 rounded-full text-[10px] bg-amber-100 text-amber-700 font-bold">Pembinaan Wali Kelas</span>';
     }
 
