@@ -1662,62 +1662,76 @@ function initDropdowns() {
 
 // LOGIS OTENTIKASI (Support Guru Pembina, Guru Biasa, & Siswa)
 // LOGIS OTENTIKASI
-function handleLogin(e) {
-  e.preventDefault();
-  const inputId = document.getElementById('loginId').value.trim();
-  
-  // 1. Cek Guru
-  const foundGuru = DATA_GURU.find(g => g.nip === inputId) || DATA_GURU.find(g => g.nama.toLowerCase().includes(inputId.toLowerCase()));
-  
-  // 2. Cek Siswa
-  const foundSiswa = DATA_SISWA.find(s => s.nisn === inputId) || DATA_SISWA.find(s => s.nama.toLowerCase() === inputId.toLowerCase());
+async function handleLogin(e) {
+  if (e) e.preventDefault();
 
-  if (foundGuru) {
-    currentUser = { ...foundGuru, role: 'guru' };
-  } else if (foundSiswa) {
-    currentUser = { nip: foundSiswa.nisn, nama: `${foundSiswa.nama} (${foundSiswa.kelas})`, isPembina: false, role: 'siswa' };
-  } else {
-    currentUser = { nip: inputId, nama: 'Tamu / Pengguna', isPembina: false, role: 'tamu' };
+  const inputId = document.getElementById('loginId')?.value.trim();
+
+  if (!inputId) {
+    alert('Harap masukkan NIP, NISN, atau Nama!');
+    return;
   }
 
-  // Update UI Header & User Info
+  // 1. Cek Data Guru (berdasarkan NIP atau Nama)
+  const foundGuru = DATA_GURU.find(g => g.nip === inputId) || 
+                    DATA_GURU.find(g => g.nama.toLowerCase().includes(inputId.toLowerCase()));
+  
+  // 2. Cek Data Siswa (berdasarkan NISN atau Nama)
+  const foundSiswa = DATA_SISWA.find(s => s.nisn === inputId) || 
+                     DATA_SISWA.find(s => s.nama.toLowerCase() === inputId.toLowerCase());
+
+  // 3. Validasi Hak Akses (Tanpa Akses Tamu)
+  if (foundGuru) {
+    currentUser = { 
+      ...foundGuru, 
+      role: 'guru',
+      isPembina: !!foundGuru.isPembina 
+    };
+  } else if (foundSiswa) {
+    currentUser = { 
+      nip: foundSiswa.nisn, 
+      nama: `${foundSiswa.nama} (${foundSiswa.kelas})`, 
+      isPembina: false, 
+      role: 'siswa' 
+    };
+  } else {
+    // BLOKIR JIKA TIDAK TERDAFTAR (TAMU DIHILANGKAN)
+    alert('Akses Ditolak! NIP, NISN, atau Nama tidak terdaftar di sistem.');
+    return; 
+  }
+
+  // 4. Update UI Header & Badge Pengguna
   document.getElementById('userPelapor').innerText = currentUser.nama;
   document.getElementById('infoNamaPelapor').innerText = currentUser.nama;
   
   let roleLabel = 'Guru';
-  if (currentUser.role === 'siswa') roleLabel = 'Siswa';
-  else if (currentUser.isPembina) roleLabel = 'Admin';
+  if (currentUser.role === 'siswa') {
+    roleLabel = 'Siswa';
+  } else if (currentUser.isPembina) {
+    roleLabel = 'Admin / Pembina BK';
+  }
 
   document.getElementById('userRoleBadge').innerText = roleLabel;
 
-  document.getElementById('pageLogin').classList.add('hidden');
-  document.getElementById('mainApp').classList.remove('hidden');
+  // 5. Tampilkan Halaman Utama & Sembunyikan Form Login
+  document.getElementById('pageLogin')?.classList.add('hidden');
+  document.getElementById('mainApp')?.classList.remove('hidden');
 
-  // HILANGKAN TOMBOL DASHBOARD JIKA BUKAN PEMBINA
+  // 6. Kontrol Navigasi Dashboard (Hanya Pembina/Admin yang melihat tombol Dashboard)
   const navDashBtn = document.getElementById('navDashboardBtn');
+  if (navDashBtn) {
+    navDashBtn.style.display = currentUser.isPembina ? 'inline-block' : 'none';
+  }
+
+  // 7. Tarik Data dari Supabase & Pindah Ke Form/Dashboard
+  await fetchLaporanFromSupabase();
+
   if (currentUser.isPembina) {
-    navDashBtn.style.display = 'inline-block'; // Tampilkan untuk Pembina/Admin
+    showSection('dashboard'); // Langsung buka Dashboard jika Pembina BK
   } else {
-    navDashBtn.style.display = 'none';         // Hilangkan total untuk Guru Biasa & Siswa
+    showSection('form');      // Buka Form Laporan jika Guru Biasa / Siswa
   }
 
-  showSection('form');
-
-  async function handleLogin() {
-  // ... kode verifikasi login Anda ...
-
-  if (loginBerhasil) {
-    currentUser = user; // Simpan data user
-    
-    // TARIK DATA DARI SUPABASE BEGITU MASUK AKUN
-    await fetchLaporanFromSupabase();
-
-    // Tampilkan dashboard / ganti tampilan
-    showSection('sectionDashboard');
-  }
-}
-
-}
 
 //LOGOUT
 function handleLogout() {
@@ -2123,16 +2137,22 @@ function renderRekapSiswa() {
 
     // Di dalam fungsi renderRekapSiswa()
 
-  if (s.total >= 3) {
-    statusBK = '<span class="px-2 py-0.5 rounded-full text-[10px] bg-rose-100 text-rose-700 font-bold">SP 1 / Panggilan</span>';
+    if (s.total >= 3) {
+      statusBK = '<span class="px-2 py-0.5 rounded-full text-[10px] bg-rose-100 text-rose-700 font-bold">SP 1 / Panggilan</span>';
+
+      // HANYA Pembina / BP / BK yang dapat melihat dan mengklik tombol "Panggil Ortu"
+      if (currentUser && currentUser.isPembina) {
+        const namaClean = s.nama.replace(/'/g, "\\'");
+        const kelasClean = s.kelas.replace(/'/g, "\\'");
+        aksiPanggilan = `<button onclick="bukaModalPanggilan('${namaClean}', '${kelasClean}', ${s.total})" class="px-2.5 py-1 bg-rose-600 text-white text-[11px] font-bold rounded-lg hover:bg-rose-700 shadow-sm transition">Panggil Ortu</button>`;
+      } else {
+        aksiPanggilan = '<span class="text-[11px] text-rose-600 font-semibold">Akses Terbatas</span>';
+      }
+    } 
     
-    // Escape tanda petik agar nama/kelas yang mengandung karakter khusus tidak merusak sintaks JS
-    const namaClean = s.nama.replace(/'/g, "\\'");
-    const kelasClean = s.kelas.replace(/'/g, "\\'");
-    
-    // HUBUNGKAN KE FUNGSI bukaModalPanggilan
-    aksiPanggilan = `<button onclick="bukaModalPanggilan('${namaClean}', '${kelasClean}', ${s.total})" class="px-2.5 py-1 bg-rose-600 text-white text-[11px] font-bold rounded-lg hover:bg-rose-700 shadow-sm transition">Panggil Ortu</button>`;
-  }
+    else if (s.total === 2) {
+      statusBK = '<span class="px-2 py-0.5 rounded-full text-[10px] bg-amber-100 text-amber-700 font-bold">Konseling BK</span>';
+    }
 
     return `
       <tr class="hover:bg-slate-50 border-b border-slate-100">
