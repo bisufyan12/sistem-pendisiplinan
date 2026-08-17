@@ -2330,7 +2330,7 @@ function prosesCetakPanggilan() {
 
       <!-- TITLE SURAT -->
       <div class="title">SURAT PANGGILAN ORANG TUA / WALI SISWA</div>
-      <div class="nomor">Nomor: 422 / BP-BK / ${new Date().getFullYear()}</div>
+      <div class="nomor">Nomor: ... / ... / ${new Date().getFullYear()}</div>
 
       <p>Kepada Yth.<br><b>Orang Tua / Wali Siswa</b><br>di Tempat</p>
       
@@ -2343,7 +2343,7 @@ function prosesCetakPanggilan() {
         <tr><td><b>Akumulasi Pelanggaran</b></td><td>:</td><td>${selectedSiswaPanggilan.total} Kasus Pelanggaran</td></tr>
       </table>
 
-      <p>Untuk hadir menemui Tim Ketertiban / Wali Kelas pada:</p>
+      <p>Untuk hadir pada:</p>
 
       <table class="table-info">
         <tr><td width="160"><b>Hari / Tanggal</b></td><td width="15">:</td><td>${tglFormatted}</td></tr>
@@ -2365,12 +2365,21 @@ function prosesCetakPanggilan() {
             <b><u>${currentUser?.nama || '(Nama Wali Kelas siswa tsb)'}</u></b><br>
             NIP. ${currentUser?.nip || '(NIP. Walas tsb)'}
           </td>
+<<<<<<< HEAD
+          <td width="50%">
+            Karawang, ${new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}<br>
+            <b>Wali Kelas</b>
+            <br><br><br><br>
+            <b><u>${currentUser?.nama || 'Robby Sopyan, S.Pd'}</u></b><br>
+            NIP. ${currentUser?.nip || '-'}
+=======
           <td width="50%" align="left">
             Karawang, ${titiMangsa}<br>
             Kepala Sekolah,
-            <br><br><br><br><br>
+            <br><br><br><br>
             <b><u>Drs. H. Agus Setiawan, M.Pd</u></b><br>
             NIP. 196809171992031007
+>>>>>>> a870f2fc219ee38d61066d2f91f884c0dc0376f8
           </td>
         </tr>
       </table>
