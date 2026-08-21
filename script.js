@@ -178,7 +178,7 @@ const DATA_GURU = [
     {nip: '196702151991011003', nama: 'SAPE I, S.Pd.', isPembina: false},
     {nip: '197009042000031004', nama: 'MAMAN SUKMANA, S.Pd', isPembina: true},
     {nip: '197210222005011008', nama: 'YUDI KIRMADI, S.Pd., M.Pd.', isPembina: true},
-    {nip: '197710302008012005', nama: 'Hj. HERNI NURAENI, S.Pd', isPembina: true,
+    {nip: '197710302008012005', nama: 'Hj. HERNI NURAENI, S.Pd', isPembina: true},
     {nip: '197709242005012010', nama: 'AIDA AMALIA, S.Pd', isPembina: true},
     {nip: '196609262005011002', nama: 'II HUDORI, S.Pd', isPembina: true},
     {nip: '198709172011012003', nama: 'LIA KOMALASARI, S.Pd.', isPembina: true},
