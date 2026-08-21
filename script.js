@@ -2410,20 +2410,70 @@ function prosesCetakPanggilan() {
 }
 
 function exportToCSV() {
-  let csv = 'Tanggal,Pelapor,Tipe,Pelanggaran,Siswa,Kelas,Keterangan\n';
+  // 1. Validasi apakah ada data yang bisa diexport
+  if (!listLaporan || listLaporan.length === 0) {
+    alert('Belum ada data laporan yang dapat di-export!');
+    return;
+  }
+
+  // 2. Buat Header Kolom CSV
+  let csvContent = '\uFEFF'; // BOM (Byte Order Mark) agar huruf & karakter khusus terbaca rapi di Excel
+  csvContent += 'No,Tanggal,Pelapor,Tipe Laporan,Pelanggaran,Nama Siswa,Kelas,Keterangan\n';
+
+  let nomor = 1;
+
+  // 3. Iterasi Data Laporan
   listLaporan.forEach(l => {
-    l.siswa.forEach(s => {
-      csv += `"${l.tanggal}","${l.pelapor}","${l.tipe}","${l.pelanggaran}","${s.nama}","${s.kelas}","${s.ket || ''}"\n`;
-    });
+    // Fungsi pembantu untuk membersihkan teks dari karakter yang merusak format CSV
+    const cleanText = (text) => {
+      if (!text) return '""';
+      const safe = String(text).replace(/"/g, '""'); // Escape tanda petik dua
+      return `"${safe}"`;
+    };
+
+    const tgl = cleanText(l.tanggal);
+    const pelapor = cleanText(l.pelapor);
+    const tipe = cleanText(l.tipe);
+    const pelanggaran = cleanText(l.pelanggaran);
+
+    // Jika laporan berisi array siswa
+    if (Array.isArray(l.siswa) && l.siswa.length > 0) {
+      l.siswa.forEach(s => {
+        const namaSiswa = cleanText(s.nama);
+        const kelasSiswa = cleanText(s.kelas);
+        const ket = cleanText(s.ket || '-');
+
+        csvContent += `${nomor++},${tgl},${pelapor},${tipe},${pelanggaran},${namaSiswa},${kelasSiswa},${ket}\n`;
+      });
+    } else {
+      // Jika data siswa tunggal
+      const namaSiswa = cleanText(l.namaSiswa || '-');
+      const kelasSiswa = cleanText(l.kelasSiswa || '-');
+      const ket = cleanText(l.keterangan || '-');
+
+      csvContent += `${nomor++},${tgl},${pelapor},${tipe},${pelanggaran},${namaSiswa},${kelasSiswa},${ket}\n`;
+    }
   });
 
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  // 4. Proses Unduh File CSV
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const fileName = `Rekap_SIPS_SMANDA_${new Date().toISOString().split('T')[0]}.csv`;
+
   const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.setAttribute('download', `Rekap_SIPS_SMANDA_${new Date().toISOString().split('T')[0]}.csv`);
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  if (navigator.msSaveOrOpenBlob) {
+    // Untuk IE / Edge lama
+    navigator.msSaveOrOpenBlob(blob, fileName);
+  } else {
+    // Untuk Browser Modern (Chrome, Firefox, Safari)
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', fileName);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url); // Hapus memori objek URL
+  }
 }
 
 // Jalankan otomatis begitu seluruh file HTML & JS selesai dimuat browser
