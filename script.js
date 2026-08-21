@@ -2359,6 +2359,14 @@ function prosesCetakPanggilan() {
       <!-- TITIMANGSA & TANDA TANGAN SESUAI GAMBAR -->
       <table class="footer-table">
         <tr>
+        <td width="50%" align="left">
+            Karawang, ${titiMangsa}<br>
+            Kepala Sekolah,
+            <br><br><br><br>
+            <b><u>Drs. H. Agus Setiawan, M.Pd</u></b><br>
+            NIP. 196809171992031007
+          </td>
+          
           <td width="50%" align="left">
             Wali Kelas
             <br><br><br><br><br>
@@ -2366,13 +2374,6 @@ function prosesCetakPanggilan() {
             NIP. ${currentUser?.nip || '(NIP. Walas tsb)'}
           </td>
 
-          <td width="50%" align="left">
-            Karawang, ${titiMangsa}<br>
-            Kepala Sekolah,
-            <br><br><br><br>
-            <b><u>Drs. H. Agus Setiawan, M.Pd</u></b><br>
-            NIP. 196809171992031007
-          </td>
         </tr>
       </table>
     </body>
