@@ -176,52 +176,52 @@ const DATA_GURU = [
     {nip: '196607281990032005', nama: 'ROBIATI, S.Pd', isPembina: false},
     {nip: '196802071991031006', nama: 'H. ENGKOS HENDRAYANA, M.Pd', isPembina: false},
     {nip: '196702151991011003', nama: 'SAPE I, S.Pd.', isPembina: false},
-    {nip: '197009042000031004', nama: 'MAMAN SUKMANA, S.Pd', isPembina: false},
+    {nip: '197009042000031004', nama: 'MAMAN SUKMANA, S.Pd', isPembina: true},
     {nip: '197210222005011008', nama: 'YUDI KIRMADI, S.Pd., M.Pd.', isPembina: true},
-    {nip: '197710302008012005', nama: 'Hj. HERNI NURAENI, S.Pd', isPembina: false},
+    {nip: '197710302008012005', nama: 'Hj. HERNI NURAENI, S.Pd', isPembina: true,
     {nip: '197709242005012010', nama: 'AIDA AMALIA, S.Pd', isPembina: true},
     {nip: '196609262005011002', nama: 'II HUDORI, S.Pd', isPembina: true},
-    {nip: '198709172011012003', nama: 'LIA KOMALASARI, S.Pd.', isPembina: false},
-    {nip: '198411172009032002', nama: 'ROMAULI PANJAITAN, S.Pd', isPembina: false},
+    {nip: '198709172011012003', nama: 'LIA KOMALASARI, S.Pd.', isPembina: true},
+    {nip: '198411172009032002', nama: 'ROMAULI PANJAITAN, S.Pd', isPembina: true},
     {nip: '197102012011011001', nama: 'SABAM PASARIBU, S.Pd', isPembina: false},
-    {nip: '199112012019032012', nama: 'NUNIK RASTANTI, S.Pd.', isPembina: false},
-    {nip: '199311052019031012', nama: 'RIZKI ANANDA, S.Pd.', isPembina: false},
+    {nip: '199112012019032012', nama: 'NUNIK RASTANTI, S.Pd.', isPembina: true},
+    {nip: '199311052019031012', nama: 'RIZKI ANANDA, S.Pd.', isPembina: true},
     {nip: '197905202022212013', nama: 'MIMIN MINTARSIH, S.Pd', isPembina: true},
     {nip: '199303282022212014', nama: 'RINRIN NURHIDAYANTI, S.Pd.', isPembina: true},
-    {nip: '199412182022212022', nama: 'FISKA DESI WARDI, S.Pd.', isPembina: false},
-    {nip: '199510082022211005', nama: 'IQBAL NURIANA, S.Sn', isPembina: false},
-    {nip: '198506142022212034', nama: 'RINI PURBASARI, S.Pd.', isPembina: false},
+    {nip: '199412182022212022', nama: 'FISKA DESI WARDI, S.Pd.', isPembina: true},
+    {nip: '199510082022211005', nama: 'IQBAL NURIANA, S.Sn', isPembina: true},
+    {nip: '198506142022212034', nama: 'RINI PURBASARI, S.Pd.', isPembina: true},
     {nip: '199105262022211011', nama: 'NANDAR HARYANA, S.Pd.', isPembina: true},
-    {nip: '199107272022211011', nama: 'ANGGA EKA PRATAMA, S.Pd.', isPembina: false},
-    {nip: '197602012022212006', nama: 'SRI MURNI, S,S', isPembina: false},
-    {nip: '198405192022211008', nama: 'ABDUL AZIZIL HAKIM, S.Pd', isPembina: false},
+    {nip: '199107272022211011', nama: 'ANGGA EKA PRATAMA, S.Pd.', isPembina: true},
+    {nip: '197602012022212006', nama: 'SRI MURNI, S,S', isPembina: true},
+    {nip: '198405192022211008', nama: 'ABDUL AZIZIL HAKIM, S.Pd', isPembina: true},
     {nip: '198506082022211021', nama: 'RASITO ROMADONA, S.Pd.', isPembina: true},
-    {nip: '198601172022212032', nama: 'ATNI ADIA, S.ST', isPembina: false},
-    {nip: '199104212022212015', nama: 'SITI HODIJAH, S.Pd', isPembina: false},
-    {nip: '199304082022212025', nama: 'HAYATUL MARDHIYAH, S.Pd', isPembina: false},
-    {nip: '199510182022212011', nama: 'DITA AMALIA, S.Pd', isPembina: false},
+    {nip: '198601172022212032', nama: 'ATNI ADIA, S.ST', isPembina: true},
+    {nip: '199104212022212015', nama: 'SITI HODIJAH, S.Pd', isPembina: true},
+    {nip: '199304082022212025', nama: 'HAYATUL MARDHIYAH, S.Pd', isPembina: true},
+    {nip: '199510182022212011', nama: 'DITA AMALIA, S.Pd', isPembina: true},
     {nip: '199603122022211002', nama: 'ROBBY SOPYAN, S.Pd', isPembina: true},
     {nip: '199501022022211001', nama: 'MUHAMMAD NUR ROHIM, S.Pd.', isPembina: false},
-    {nip: '198604082023211011', nama: 'RIZKI MIFTAH FARID, S..Pd.', isPembina: false},
+    {nip: '198604082023211011', nama: 'RIZKI MIFTAH FARID, S..Pd.', isPembina: true},
     {nip: '198008082024211007', nama: 'DEDI SOFYAN, S.S', isPembina: false},
-    {nip: '199109062024211015', nama: 'DERIANUR SUPARTA, S.Kom', isPembina: false},
-    {nip: '199211082024212021', nama: 'EKA ROHMAYASARI, S.Pd.', isPembina: false},
-    {nip: '198206062024211007', nama: 'MAHMUD FAUZI, SE', isPembina: false},
-    {nip: '198403272024212014', nama: 'RINI EFFENDI, SE', isPembina: false},
-    {nip: '197605062024212004', nama: 'SUSY ROSTINAH, S.Ag.', isPembina: false},
+    {nip: '199109062024211015', nama: 'DERIANUR SUPARTA, S.Kom', isPembina: true},
+    {nip: '199211082024212021', nama: 'EKA ROHMAYASARI, S.Pd.', isPembina: true},
+    {nip: '198206062024211007', nama: 'MAHMUD FAUZI, SE', isPembina: true},
+    {nip: '198403272024212014', nama: 'RINI EFFENDI, SE', isPembina: true},
+    {nip: '197605062024212004', nama: 'SUSY ROSTINAH, S.Ag.', isPembina: true},
     {nip: '198907042024211016', nama: 'TINO BUDI SUSILO, S.Pd.', isPembina: true},
-    {nip: '198212192024212010', nama: 'YENI RAHMAWATI, S.Pd.', isPembina: false},
+    {nip: '198212192024212010', nama: 'YENI RAHMAWATI, S.Pd.', isPembina: true},
     {nip: '197704032022212004', nama: 'WIWIEK WILLIYA, M.Kom.', isPembina: false},
     {nip: '198602132025212064', nama: 'NINA HERLIANAWATI, S.Pd', isPembina: false},
     {nip: '196912192025212008', nama: 'Dra. Hj. MASRO AH', isPembina: false},
     {nip: '198706062025212139', nama: 'NANI SUMARNI, S.Pd.I', isPembina: false},
-    {nip: '199109172025212121', nama: 'HELMI LISTIANI, S.Pd', isPembina: false},
+    {nip: '199109172025212121', nama: 'HELMI LISTIANI, S.Pd', isPembina: true},
     {nip: '199102132025211103', nama: 'APIP ABDUL LATIP, S.Pd.I', isPembina: false},
-    {nip: '199609132025212134', nama: 'WILDA TRI YANTI, S.Pd', isPembina: false},
+    {nip: '199609132025212134', nama: 'WILDA TRI YANTI, S.Pd', isPembina: true},
     {nip: '199609242025212093', nama: 'LUTFI NURSYIFA, S.Pd', isPembina: false},
-    {nip: '199705042025212100', nama: 'AVIRELL PUTERI, S.Pd', isPembina: false},
-    {nip: '199507242025212128', nama: 'HENI YULIANTI, S.Ak', isPembina: false},
-    {nip: '199304142025211153', nama: 'YAYAN SURYANA FATAH, S.Pd.', isPembina: false},
+    {nip: '199705042025212100', nama: 'AVIRELL PUTERI, S.Pd', isPembina: true},
+    {nip: '199507242025212128', nama: 'HENI YULIANTI, S.Ak', isPembina: true},
+    {nip: '199304142025211153', nama: 'YAYAN SURYANA FATAH, S.Pd.', isPembina: true},
     {nip: '197002082025212014', nama: 'ENDAH ERAWATI', isPembina: false},
     {nip: '197805052025211139', nama: 'SUHERDI', isPembina: false},
     {nip: '198506012025211082', nama: 'NANANG ABDUL ROHMAN, S.I.Pust', isPembina: false},
@@ -1708,7 +1708,7 @@ async function handleLogin(e) {
   if (currentUser.role === 'siswa') {
     roleLabel = 'Siswa';
   } else if (currentUser.isPembina) {
-    roleLabel = 'Admin / Pembina BK';
+    roleLabel = 'Admin';
   }
 
   document.getElementById('userRoleBadge').innerText = roleLabel;
@@ -2366,7 +2366,7 @@ function prosesCetakPanggilan() {
             <b><u>Drs. H. Agus Setiawan, M.Pd</u></b><br>
             NIP. 196809171992031007
           </td>
-          
+
           <td width="50%" align="left">
             Wali Kelas
             <br><br><br><br><br>
