@@ -2365,21 +2365,13 @@ function prosesCetakPanggilan() {
             <b><u>${currentUser?.nama || '(Nama Wali Kelas siswa tsb)'}</u></b><br>
             NIP. ${currentUser?.nip || '(NIP. Walas tsb)'}
           </td>
-<<<<<<< HEAD
-          <td width="50%">
-            Karawang, ${new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}<br>
-            <b>Wali Kelas</b>
-            <br><br><br><br>
-            <b><u>${currentUser?.nama || 'Robby Sopyan, S.Pd'}</u></b><br>
-            NIP. ${currentUser?.nip || '-'}
-=======
+
           <td width="50%" align="left">
             Karawang, ${titiMangsa}<br>
             Kepala Sekolah,
             <br><br><br><br>
             <b><u>Drs. H. Agus Setiawan, M.Pd</u></b><br>
             NIP. 196809171992031007
->>>>>>> a870f2fc219ee38d61066d2f91f884c0dc0376f8
           </td>
         </tr>
       </table>
